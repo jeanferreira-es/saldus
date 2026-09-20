@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Meu Dinheiro",
+    "slug": "meu-dinheiro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/money-icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "meudinheiro",
+    "splash": {
+      "image": "./assets/money-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jean.meudinheiro"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/money-icon.png",
+        "backgroundColor": "#F97316"
+      },
+      "package": "com.jean.meudinheiro"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/money-icon.png",
+          "imageWidth": 150,
+          "imageHeight": 150,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0098d552-f54b-4ead-aca9-b197a80c3059"
+      }
+    },
+    "owner": "jeanferreira"
+  }
+}
