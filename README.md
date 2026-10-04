@@ -71,7 +71,7 @@ Escaneie o QR code com o **Expo Go** (Android) ou a câmera (iOS), ou aperte
 `a` / `i` no terminal para abrir num emulador.
 
 ## Personalizando
-
+ß
 - **Cores**: `src/views/theme/palette.ts` (`lightPalette` / `darkPalette`).
 - **Categorias**: `EXPENSE_CATEGORIES` / `INCOME_CATEGORIES` em `src/models/types.ts`.
 - **Regras de negócio** (ex: como o "comprometido no próximo mês" é calculado):
@@ -82,4 +82,4 @@ Escaneie o QR code com o **Expo Go** (Android) ou a câmera (iOS), ou aperte
 
 - Gráficos de gastos por categoria.
 - Notificações locais lembrando de parcelas e empréstimos perto do vencimento.
-- Exportar/backup dos dados (JSON) ou sincronizar em nuvem.
+- Exportar/backup dos dados (JSON) ou sincronizar em nuvem.˜`

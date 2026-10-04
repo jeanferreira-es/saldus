@@ -34,10 +34,25 @@ export default function LoanDetailScreen() {
   const settled = total <= 0;
   const tone = settled ? "neutral" : isLent ? "income" : "expense";
 
-  const handleLongPress = (id: string) => {
+  const confirmEdit = (id: string) => {
+    Alert.alert("Editar lançamento", "Deseja editar este registro?", [
+      { text: "Cancelar", style: "cancel" },
+      { text: "Editar", onPress: () => navigation.navigate("AddLoan", { id }) },
+    ]);
+  };
+
+  const confirmDelete = (id: string) => {
     Alert.alert("Excluir lançamento", "Deseja remover este registro?", [
       { text: "Cancelar", style: "cancel" },
       { text: "Excluir", style: "destructive", onPress: () => removeLoan(id) },
+    ]);
+  };
+
+  const handlePress = (id: string) => {
+    Alert.alert("Lançamento", "O que deseja fazer com este registro?", [
+      { text: "Cancelar", style: "cancel" },
+      { text: "Editar", onPress: () => confirmEdit(id) },
+      { text: "Excluir", style: "destructive", onPress: () => confirmDelete(id) },
     ]);
   };
 
@@ -93,8 +108,8 @@ export default function LoanDetailScreen() {
           <FadeSlideIn delay={Math.min(index, 8) * 30}>
             <LoanEntryListItem
               loan={item}
-              onPress={() => navigation.navigate("AddLoan", { id: item.id })}
-              onLongPress={() => handleLongPress(item.id)}
+              onPress={() => handlePress(item.id)}
+              onLongPress={() => handlePress(item.id)}
             />
           </FadeSlideIn>
         )}

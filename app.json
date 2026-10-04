@@ -7,11 +7,6 @@
     "icon": "./assets/money-icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "meudinheiro",
-    "splash": {
-      "image": "./assets/money-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -41,7 +36,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-sqlite",
+      "expo-status-bar"
     ],
     "extra": {
       "eas": {
