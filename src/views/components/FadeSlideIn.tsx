@@ -1,7 +1,7 @@
 /**
  * VIEW LAYER — animação de entrada reutilizável.
  * Faz um fade-in + slide-up suave quando o componente é montado.
- * Usado nos cartões da Home e nos itens de lista (transações/empréstimos)
+ * Usado nos itens de lista (transações/empréstimos) e nos formulários
  * para dar uma sensação viva à interface sem exagerar.
  */
 import React, { useEffect, useRef } from "react";

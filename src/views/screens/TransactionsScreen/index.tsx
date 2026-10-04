@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FlatList, Alert } from "react-native";
+import { FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useFinanceController } from "@/controllers/FinanceController";
@@ -10,6 +10,7 @@ import FadeSlideIn from "@/views/components/FadeSlideIn";
 import { TransactionKind } from "@/models/types";
 import { FinanceCalculator } from "@/models/FinanceCalculator";
 import { formatCurrency } from "@/utils/format";
+import { showRecordActions } from "@/utils/recordActions";
 import * as S from "./styles";
 
 type FilterKind = "all" | TransactionKind;
@@ -29,12 +30,11 @@ export default function TransactionsScreen() {
     return FinanceCalculator.totalsByCategory(transactions, filter);
   }, [transactions, filter]);
 
-  const handleLongPress = (id: string) => {
-    Alert.alert("Excluir movimentação", "Deseja remover este lançamento?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Excluir", style: "destructive", onPress: () => removeTransaction(id) },
-    ]);
-  };
+  const handlePress = (id: string) =>
+    showRecordActions({
+      onEdit: () => navigation.navigate("AddTransaction", { id }),
+      onDelete: () => removeTransaction(id),
+    });
 
   return (
     <S.Container edges={["top"]}>
@@ -83,8 +83,8 @@ export default function TransactionsScreen() {
           <FadeSlideIn delay={Math.min(index, 8) * 30}>
             <TransactionListItem
               transaction={item}
-              onPress={() => navigation.navigate("AddTransaction", { id: item.id })}
-              onLongPress={() => handleLongPress(item.id)}
+              onPress={() => handlePress(item.id)}
+              onLongPress={() => handlePress(item.id)}
             />
           </FadeSlideIn>
         )}

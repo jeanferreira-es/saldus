@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FlatList, Alert } from "react-native";
+import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -10,6 +10,7 @@ import FadeSlideIn from "@/views/components/FadeSlideIn";
 import { LoanCalculator } from "@/models/LoanCalculator";
 import { LoanKind } from "@/models/types";
 import { formatCurrency } from "@/utils/format";
+import { showRecordActions } from "@/utils/recordActions";
 import * as S from "./styles";
 
 export default function LoanDetailScreen() {
@@ -34,27 +35,11 @@ export default function LoanDetailScreen() {
   const settled = total <= 0;
   const tone = settled ? "neutral" : isLent ? "income" : "expense";
 
-  const confirmEdit = (id: string) => {
-    Alert.alert("Editar lançamento", "Deseja editar este registro?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Editar", onPress: () => navigation.navigate("AddLoan", { id }) },
-    ]);
-  };
-
-  const confirmDelete = (id: string) => {
-    Alert.alert("Excluir lançamento", "Deseja remover este registro?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Excluir", style: "destructive", onPress: () => removeLoan(id) },
-    ]);
-  };
-
-  const handlePress = (id: string) => {
-    Alert.alert("Lançamento", "O que deseja fazer com este registro?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Editar", onPress: () => confirmEdit(id) },
-      { text: "Excluir", style: "destructive", onPress: () => confirmDelete(id) },
-    ]);
-  };
+  const handlePress = (id: string) =>
+    showRecordActions({
+      onEdit: () => navigation.navigate("AddLoan", { id }),
+      onDelete: () => removeLoan(id),
+    });
 
   return (
     <S.Container edges={["top"]}>

@@ -5,7 +5,6 @@ import { useThemeController } from "@/controllers/ThemeController";
 import { ThemeMode } from "@/models/types";
 import Card from "@/views/components/Card";
 import AnimatedPressable from "@/views/components/AnimatedPressable";
-import FadeSlideIn from "@/views/components/FadeSlideIn";
 import * as S from "./styles";
 
 const OPTIONS: { mode: ThemeMode; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -23,22 +22,20 @@ export default function SettingsScreen() {
       <S.Title>Configurações</S.Title>
 
       <S.SectionLabel>Aparência</S.SectionLabel>
-      <FadeSlideIn>
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          {OPTIONS.map((opt, idx) => {
-            const active = mode === opt.mode;
-            return (
-              <AnimatedPressable key={opt.mode} onPress={() => setMode(opt.mode)}>
-                <S.Row divider={idx < OPTIONS.length - 1}>
-                  <Ionicons name={opt.icon} size={20} color={active ? theme.primary : theme.textSecondary} />
-                  <S.RowLabel>{opt.label}</S.RowLabel>
-                  {active && <Ionicons name="checkmark" size={20} color={theme.primary} />}
-                </S.Row>
-              </AnimatedPressable>
-            );
-          })}
-        </Card>
-      </FadeSlideIn>
+      <Card style={{ padding: 0, overflow: "hidden" }}>
+        {OPTIONS.map((opt, idx) => {
+          const active = mode === opt.mode;
+          return (
+            <AnimatedPressable key={opt.mode} onPress={() => setMode(opt.mode)}>
+              <S.Row divider={idx < OPTIONS.length - 1}>
+                <Ionicons name={opt.icon} size={20} color={active ? theme.primary : theme.textSecondary} />
+                <S.RowLabel>{opt.label}</S.RowLabel>
+                {active && <Ionicons name="checkmark" size={20} color={theme.primary} />}
+              </S.Row>
+            </AnimatedPressable>
+          );
+        })}
+      </Card>
 
       <S.Footer>Meu Dinheiro · seus dados ficam salvos apenas neste aparelho</S.Footer>
     </S.Container>

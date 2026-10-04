@@ -36,18 +36,16 @@ export default function LoansScreen() {
         </AnimatedPressable>
       </S.Header>
 
-      <FadeSlideIn>
-        <S.SummaryRow>
-          <S.SummaryCard>
-            <S.SummaryLabel>A receber</S.SummaryLabel>
-            <S.SummaryValue tone="income">{formatCurrency(totalReceivable)}</S.SummaryValue>
-          </S.SummaryCard>
-          <S.SummaryCard>
-            <S.SummaryLabel>A pagar</S.SummaryLabel>
-            <S.SummaryValue tone="expense">{formatCurrency(totalPayable)}</S.SummaryValue>
-          </S.SummaryCard>
-        </S.SummaryRow>
-      </FadeSlideIn>
+      <S.SummaryRow>
+        <S.SummaryCard>
+          <S.SummaryLabel>A receber</S.SummaryLabel>
+          <S.SummaryValue tone="income">{formatCurrency(totalReceivable)}</S.SummaryValue>
+        </S.SummaryCard>
+        <S.SummaryCard>
+          <S.SummaryLabel>A pagar</S.SummaryLabel>
+          <S.SummaryValue tone="expense">{formatCurrency(totalPayable)}</S.SummaryValue>
+        </S.SummaryCard>
+      </S.SummaryRow>
 
       <S.FilterWrap>
         <SegmentedControl
