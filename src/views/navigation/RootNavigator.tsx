@@ -10,6 +10,7 @@ import HomeScreen from "@/views/screens/HomeScreen";
 import TransactionsScreen from "@/views/screens/TransactionsScreen";
 import AddTransactionScreen from "@/views/screens/AddTransactionScreen";
 import LoansScreen from "@/views/screens/LoansScreen";
+import LoanDetailScreen from "@/views/screens/LoanDetailScreen";
 import AddLoanScreen from "@/views/screens/AddLoanScreen";
 import SettingsScreen from "@/views/screens/SettingsScreen";
 
@@ -44,6 +45,7 @@ function LoansStackNavigator() {
   return (
     <LoansStack.Navigator screenOptions={{ headerShown: false }}>
       <LoansStack.Screen name="LoansMain" component={LoansScreen} />
+      <LoansStack.Screen name="LoanDetail" component={LoanDetailScreen} />
       <LoansStack.Screen name="AddLoan" component={AddLoanScreen} options={{ presentation: "modal" }} />
     </LoansStack.Navigator>
   );

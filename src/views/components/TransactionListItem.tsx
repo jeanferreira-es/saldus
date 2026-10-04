@@ -8,6 +8,7 @@ import { fonts } from "@/views/theme/fonts";
 
 interface Props {
   transaction: Transaction;
+  onPress?: () => void;
   onLongPress?: () => void;
 }
 
@@ -65,7 +66,7 @@ const Amount = styled.Text<{ tint: string }>`
   color: ${({ tint }) => tint};
 `;
 
-export default function TransactionListItem({ transaction, onLongPress }: Props) {
+export default function TransactionListItem({ transaction, onPress, onLongPress }: Props) {
   const theme = useTheme();
   const isIncome = transaction.kind === "income";
   const tint = isIncome ? theme.income : theme.primary;
@@ -76,7 +77,7 @@ export default function TransactionListItem({ transaction, onLongPress }: Props)
   }
 
   return (
-    <Row onLongPress={onLongPress} activeOpacity={0.7}>
+    <Row onPress={onPress} onLongPress={onLongPress} disabled={!onPress && !onLongPress} activeOpacity={0.7}>
       <IconWrap tint={`${tint}22`}>
         <Ionicons name={RECURRENCE_ICON[transaction.recurrence]} size={18} color={tint} />
       </IconWrap>

@@ -81,7 +81,11 @@ export default function TransactionsScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
         renderItem={({ item, index }) => (
           <FadeSlideIn delay={Math.min(index, 8) * 30}>
-            <TransactionListItem transaction={item} onLongPress={() => handleLongPress(item.id)} />
+            <TransactionListItem
+              transaction={item}
+              onPress={() => navigation.navigate("AddTransaction", { id: item.id })}
+              onLongPress={() => handleLongPress(item.id)}
+            />
           </FadeSlideIn>
         )}
         ListEmptyComponent={<S.EmptyText>Nenhuma movimentação por aqui ainda</S.EmptyText>}

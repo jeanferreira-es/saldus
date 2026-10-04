@@ -31,8 +31,20 @@ export async function initDatabase(): Promise<void> {
       amount REAL NOT NULL,
       date TEXT NOT NULL,
       due_date TEXT,
-      paid INTEGER NOT NULL,
+      type TEXT NOT NULL DEFAULT 'loan',
       notes TEXT
     );
   `);
+
+  // Migração: bancos criados antes da introdução do campo `type` (que substituiu `paid`).
+  const loanColumns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(loans)");
+  const hasType = loanColumns.some((c) => c.name === "type");
+  if (!hasType) {
+    await db.execAsync("ALTER TABLE loans ADD COLUMN type TEXT NOT NULL DEFAULT 'loan'");
+  }
+  const hasPaid = loanColumns.some((c) => c.name === "paid");
+  if (hasPaid) {
+    // A coluna antiga era NOT NULL sem default — INSERTs novos (que não a preenchem) quebrariam.
+    await db.execAsync("ALTER TABLE loans DROP COLUMN paid");
+  }
 }

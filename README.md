@@ -1,4 +1,4 @@
-# Meu Dinheiro 🍊
+# Saldus 🍊
 
 App de controle financeiro pessoal em **React Native + Expo (TypeScript)**, com
 **arquitetura MVC**, estilização em **styled-components** e persistência em

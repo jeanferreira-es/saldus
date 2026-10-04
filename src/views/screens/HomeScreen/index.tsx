@@ -15,7 +15,7 @@ const HIDDEN_MASK = "••••••";
 
 export default function HomeScreen() {
   const theme = useTheme();
-  const { transactions, balance, commitment, receivable } = useFinanceController();
+  const { transactions, balance, commitment } = useFinanceController();
   const navigation = useNavigation<any>();
   const [hideBalance, setHideBalance] = useState(false);
 
@@ -72,12 +72,7 @@ export default function HomeScreen() {
               <S.CommitmentTitle>Comprometido no próximo mês</S.CommitmentTitle>
             </S.CommitmentRow>
             <S.CommitmentValue>{formatCurrency(commitment)}</S.CommitmentValue>
-            <S.CommitmentHint>Assinaturas, parcelas em aberto e empréstimos a pagar</S.CommitmentHint>
-            {receivable > 0 && (
-              <S.CommitmentHint style={{ color: theme.income, marginTop: 4 }}>
-                + {formatCurrency(receivable)} a receber de empréstimos
-              </S.CommitmentHint>
-            )}
+            <S.CommitmentHint>Assinaturas e parcelas em aberto</S.CommitmentHint>
           </Card>
         </FadeSlideIn>
 
@@ -106,7 +101,13 @@ export default function HomeScreen() {
             {recent.length === 0 ? (
               <S.EmptyText>Nenhuma movimentação ainda</S.EmptyText>
             ) : (
-              recent.map((t) => <TransactionListItem key={t.id} transaction={t} />)
+              recent.map((t) => (
+                <TransactionListItem
+                  key={t.id}
+                  transaction={t}
+                  onPress={() => navigation.navigate("AddTransaction", { id: t.id })}
+                />
+              ))
             )}
           </Card>
         </FadeSlideIn>

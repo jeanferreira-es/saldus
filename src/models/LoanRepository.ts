@@ -16,7 +16,7 @@ type LoanRow = {
   amount: number;
   date: string;
   due_date: string | null;
-  paid: number;
+  type: string;
   notes: string | null;
 };
 
@@ -28,7 +28,7 @@ function rowToLoan(row: LoanRow): Loan {
     amount: row.amount,
     date: row.date,
     dueDate: row.due_date ?? undefined,
-    paid: row.paid === 1,
+    type: row.type as Loan["type"],
     notes: row.notes ?? undefined,
   };
 }
@@ -44,7 +44,7 @@ export class LoanRepository {
     const db = await getDatabase();
     const id = generateId();
     await db.runAsync(
-      `INSERT INTO loans (id, kind, person, amount, date, due_date, paid, notes)
+      `INSERT INTO loans (id, kind, person, amount, date, due_date, type, notes)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
@@ -53,8 +53,28 @@ export class LoanRepository {
         data.amount,
         data.date,
         data.dueDate ?? null,
-        data.paid ? 1 : 0,
+        data.type,
         data.notes ?? null,
+      ]
+    );
+    return this.getAll();
+  }
+
+  static async update(id: string, data: Omit<Loan, "id">): Promise<Loan[]> {
+    const db = await getDatabase();
+    await db.runAsync(
+      `UPDATE loans
+         SET kind = ?, person = ?, amount = ?, date = ?, due_date = ?, type = ?, notes = ?
+       WHERE id = ?`,
+      [
+        data.kind,
+        data.person,
+        data.amount,
+        data.date,
+        data.dueDate ?? null,
+        data.type,
+        data.notes ?? null,
+        id,
       ]
     );
     return this.getAll();
@@ -63,12 +83,6 @@ export class LoanRepository {
   static async remove(id: string): Promise<Loan[]> {
     const db = await getDatabase();
     await db.runAsync("DELETE FROM loans WHERE id = ?", [id]);
-    return this.getAll();
-  }
-
-  static async togglePaid(id: string): Promise<Loan[]> {
-    const db = await getDatabase();
-    await db.runAsync("UPDATE loans SET paid = 1 - paid WHERE id = ?", [id]);
     return this.getAll();
   }
 }

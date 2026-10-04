@@ -36,15 +36,32 @@ export interface Transaction {
  */
 export type LoanKind = "lent" | "borrowed";
 
+/**
+ * Cada empréstimo é um lançamento num "extrato" por pessoa:
+ * - "loan": aumenta o valor em aberto (um novo empréstimo)
+ * - "payment": reduz o valor em aberto (um pagamento/recebimento)
+ */
+export type LoanEntryType = "loan" | "payment";
+
 export interface Loan {
   id: string;
   kind: LoanKind;
   person: string;
   amount: number;
   date: string; // ISO string
-  dueDate?: string; // ISO string
-  paid: boolean;
+  dueDate?: string; // ISO string — só relevante para lançamentos do tipo "loan"
+  type: LoanEntryType;
   notes?: string;
+}
+
+/** Agregado de todos os lançamentos de uma mesma pessoa/instituição + direção. */
+export interface LoanGroup {
+  key: string;
+  kind: LoanKind;
+  person: string;
+  total: number; // > 0 ainda em aberto; <= 0 quitado (ou com crédito a favor)
+  entries: Loan[];
+  lastDate: string; // ISO string do lançamento mais recente
 }
 
 export const EXPENSE_CATEGORIES = [

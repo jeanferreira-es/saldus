@@ -69,6 +69,28 @@ export class TransactionRepository {
     return this.getAll();
   }
 
+  static async update(id: string, data: Omit<Transaction, "id">): Promise<Transaction[]> {
+    const db = await getDatabase();
+    await db.runAsync(
+      `UPDATE transactions
+         SET kind = ?, amount = ?, category = ?, description = ?, date = ?, recurrence = ?,
+             installments_total = ?, installments_current = ?
+       WHERE id = ?`,
+      [
+        data.kind,
+        data.amount,
+        data.category,
+        data.description,
+        data.date,
+        data.recurrence,
+        data.installments?.total ?? null,
+        data.installments?.current ?? null,
+        id,
+      ]
+    );
+    return this.getAll();
+  }
+
   static async remove(id: string): Promise<Transaction[]> {
     const db = await getDatabase();
     await db.runAsync("DELETE FROM transactions WHERE id = ?", [id]);

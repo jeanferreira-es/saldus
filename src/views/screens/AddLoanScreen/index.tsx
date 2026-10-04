@@ -1,25 +1,51 @@
 import React, { useState } from "react";
 import { Alert, Platform } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFinanceController } from "@/controllers/FinanceController";
 import SegmentedControl from "@/views/components/SegmentedControl";
 import AnimatedPressable from "@/views/components/AnimatedPressable";
 import FadeSlideIn from "@/views/components/FadeSlideIn";
-import { LoanKind } from "@/models/types";
+import { LoanKind, LoanEntryType } from "@/models/types";
+import { digitsToMoneyMask, moneyMaskToNumber, numberToMoneyMask } from "@/utils/format";
 import * as S from "./styles";
 
-export default function AddLoanScreen() {
-  const { addLoan } = useFinanceController();
-  const navigation = useNavigation<any>();
+function toDayMonthYear(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+}
 
-  const [kind, setKind] = useState<LoanKind>("lent");
-  const [person, setPerson] = useState("");
-  const [amount, setAmount] = useState("");
-  const [dueDate, setDueDate] = useState(""); // dd/mm/aaaa, opcional
-  const [notes, setNotes] = useState("");
+export default function AddLoanScreen() {
+  const { loans, addLoan, updateLoan } = useFinanceController();
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+
+  // Com `id` nos params a tela abre em modo edição, preenchida com o lançamento existente.
+  const editing = loans.find((l) => l.id === route.params?.id);
+
+  const entryType: LoanEntryType = editing?.type ?? route.params?.type ?? "loan";
+  const isPayment = entryType === "payment";
+
+  const [kind, setKind] = useState<LoanKind>(editing?.kind ?? route.params?.kind ?? "lent");
+  const [person, setPerson] = useState(editing?.person ?? route.params?.person ?? "");
+  const [amount, setAmount] = useState(editing ? numberToMoneyMask(editing.amount) : "");
+  const [dueDate, setDueDate] = useState(editing?.dueDate ? toDayMonthYear(editing.dueDate) : ""); // dd/mm/aaaa, opcional
+  const [notes, setNotes] = useState(editing?.notes ?? "");
+
+  const title = editing
+    ? isPayment
+      ? kind === "lent"
+        ? "Editar recebimento"
+        : "Editar pagamento"
+      : "Editar empréstimo"
+    : isPayment
+      ? kind === "lent"
+        ? "Registrar recebimento"
+        : "Registrar pagamento"
+      : "Novo empréstimo";
 
   const handleSave = async () => {
-    const parsedAmount = parseFloat(amount.replace(",", "."));
+    const parsedAmount = moneyMaskToNumber(amount);
     if (!parsedAmount || parsedAmount <= 0) {
       Alert.alert("Valor inválido", "Informe um valor maior que zero.");
       return;
@@ -30,7 +56,7 @@ export default function AddLoanScreen() {
     }
 
     let dueIso: string | undefined;
-    if (dueDate.trim()) {
+    if (!isPayment && dueDate.trim()) {
       const match = dueDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (!match) {
         Alert.alert("Data inválida", "Use o formato dd/mm/aaaa para o vencimento, ou deixe em branco.");
@@ -40,15 +66,17 @@ export default function AddLoanScreen() {
       dueIso = new Date(Number(y), Number(m) - 1, Number(d)).toISOString();
     }
 
-    await addLoan({
+    const data = {
       kind,
       person: person.trim(),
       amount: parsedAmount,
-      date: new Date().toISOString(),
+      date: editing?.date ?? new Date().toISOString(),
       dueDate: dueIso,
-      paid: false,
+      type: entryType,
       notes: notes.trim() || undefined,
-    });
+    };
+    if (editing) await updateLoan(editing.id, data);
+    else await addLoan(data);
 
     navigation.goBack();
   };
@@ -57,35 +85,41 @@ export default function AddLoanScreen() {
     <S.Container>
       <S.Scroll keyboardShouldPersistTaps="handled">
         <FadeSlideIn>
-          <S.Title>Novo empréstimo</S.Title>
+          <S.Title>{title}</S.Title>
 
-          <SegmentedControl
-            value={kind}
-            onChange={setKind}
-            options={[
-              { label: "Eu emprestei", value: "lent" },
-              { label: "Eu peguei", value: "borrowed" },
-            ]}
-          />
+          {!isPayment && (
+            <SegmentedControl
+              value={kind}
+              onChange={setKind}
+              options={[
+                { label: "Eu emprestei", value: "lent" },
+                { label: "Eu peguei", value: "borrowed" },
+              ]}
+            />
+          )}
 
-          <S.Label>Pessoa</S.Label>
-          <S.Input value={person} onChangeText={setPerson} placeholder="Nome da pessoa" />
+          <S.Label>Pessoa ou instituição</S.Label>
+          <S.Input value={person} onChangeText={setPerson} placeholder="Nome da pessoa ou instituição" />
 
           <S.Label>Valor (R$)</S.Label>
           <S.AmountInput
             value={amount}
-            onChangeText={setAmount}
+            onChangeText={(text: string) => setAmount(digitsToMoneyMask(text))}
             placeholder="0,00"
-            keyboardType="decimal-pad"
+            keyboardType="number-pad"
           />
 
-          <S.Label>Vencimento (opcional)</S.Label>
-          <S.Input
-            value={dueDate}
-            onChangeText={setDueDate}
-            placeholder="dd/mm/aaaa"
-            keyboardType={Platform.OS === "ios" ? "numbers-and-punctuation" : "default"}
-          />
+          {!isPayment && (
+            <>
+              <S.Label>Vencimento (opcional)</S.Label>
+              <S.Input
+                value={dueDate}
+                onChangeText={setDueDate}
+                placeholder="dd/mm/aaaa"
+                keyboardType={Platform.OS === "ios" ? "numbers-and-punctuation" : "default"}
+              />
+            </>
+          )}
 
           <S.Label>Observações (opcional)</S.Label>
           <S.Input value={notes} onChangeText={setNotes} placeholder="Ex: Combinado pagar em 3x" />

@@ -2,14 +2,13 @@ import React from "react";
 import { TouchableOpacity } from "react-native";
 import styled, { useTheme } from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
-import { Loan } from "@/models/types";
-import { formatCurrency, formatDate } from "@/utils/format";
+import { LoanGroup } from "@/models/types";
+import { formatCurrency } from "@/utils/format";
 import { fonts } from "@/views/theme/fonts";
 
 interface Props {
-  loan: Loan;
-  onTogglePaid: () => void;
-  onLongPress?: () => void;
+  group: LoanGroup;
+  onPress: () => void;
 }
 
 const Row = styled(TouchableOpacity)`
@@ -57,44 +56,37 @@ const Amount = styled.Text<{ tint: string }>`
   color: ${({ tint }) => tint};
 `;
 
-const StatusBtn = styled(TouchableOpacity)`
-  flex-direction: row;
-  align-items: center;
-  gap: 3px;
-  margin-top: 4px;
-`;
-
 const StatusText = styled.Text<{ tint: string }>`
   font-size: 11px;
   font-family: ${fonts.semiBold};
+  margin-top: 4px;
   color: ${({ tint }) => tint};
 `;
 
-export default function LoanListItem({ loan, onTogglePaid, onLongPress }: Props) {
+export default function LoanListItem({ group, onPress }: Props) {
   const theme = useTheme();
-  const isLent = loan.kind === "lent";
-  const tint = isLent ? theme.income : theme.expense;
+  const isLent = group.kind === "lent";
+  const settled = group.total <= 0;
+  const tint = settled ? theme.textSecondary : isLent ? theme.income : theme.expense;
+  const entryCount = group.entries.length;
 
   return (
-    <Row onLongPress={onLongPress} activeOpacity={0.7}>
+    <Row onPress={onPress} activeOpacity={0.7}>
       <IconWrap tint={`${tint}22`}>
         <Ionicons name={isLent ? "arrow-up-circle-outline" : "arrow-down-circle-outline"} size={20} color={tint} />
       </IconWrap>
       <Info>
-        <Person numberOfLines={1}>{loan.person}</Person>
+        <Person numberOfLines={1}>{group.person}</Person>
         <Subtitle numberOfLines={1}>
-          {isLent ? "Você emprestou" : "Você pegou emprestado"} · {formatDate(loan.date)}
-          {loan.dueDate ? ` · vence ${formatDate(loan.dueDate)}` : ""}
+          {isLent ? "Você emprestou" : "Você pegou emprestado"} · {entryCount} lançamento
+          {entryCount > 1 ? "s" : ""}
         </Subtitle>
       </Info>
       <Right>
-        <Amount tint={tint}>{formatCurrency(loan.amount)}</Amount>
-        <StatusBtn onPress={onTogglePaid}>
-          {loan.paid && <Ionicons name="checkmark-circle" size={12} color={theme.textSecondary} />}
-          <StatusText tint={loan.paid ? theme.textSecondary : theme.primary}>
-            {loan.paid ? "Quitado" : isLent ? "Marcar recebido" : "Marcar pago"}
-          </StatusText>
-        </StatusBtn>
+        <Amount tint={tint}>{formatCurrency(Math.abs(group.total))}</Amount>
+        <StatusText tint={settled ? theme.textSecondary : theme.primary}>
+          {settled ? "Quitado" : "Ver detalhes"}
+        </StatusText>
       </Right>
     </Row>
   );

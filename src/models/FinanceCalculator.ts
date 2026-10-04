@@ -3,7 +3,7 @@
  * Regras de negócio puras sobre Transaction/Loan. Toda a "matemática"
  * do app mora aqui — nada de estado, React ou storage.
  */
-import { Transaction, Loan, TransactionKind } from "./types";
+import { Transaction, TransactionKind } from "./types";
 
 export interface CategoryTotal {
   category: string;
@@ -12,26 +12,14 @@ export interface CategoryTotal {
 
 export class FinanceCalculator {
   /**
-   * Saldo atual = receitas - despesas (todas as transações já lançadas)
-   * + efeito líquido dos empréstimos em aberto.
-   *
-   * Empréstimo que EU FIZ para alguém (lent) e ainda não foi pago de volta:
-   *   dinheiro saiu do meu bolso -> reduz o saldo.
-   * Empréstimo que EU PEGUEI (borrowed) e ainda não paguei de volta:
-   *   dinheiro entrou no meu bolso -> aumenta o saldo.
-   * Uma vez marcado como quitado, o efeito é neutro (o dinheiro já "voltou").
+   * Saldo atual = receitas - despesas (todas as transações já lançadas).
+   * Empréstimos NÃO entram aqui — são tratados separadamente (ver LoanCalculator),
+   * já que representam dinheiro de terceiros, não o caixa do usuário.
    */
-  static balance(transactions: Transaction[], loans: Loan[]): number {
-    const txTotal = transactions.reduce((sum, t) => {
+  static balance(transactions: Transaction[]): number {
+    return transactions.reduce((sum, t) => {
       return t.kind === "income" ? sum + t.amount : sum - t.amount;
     }, 0);
-
-    const loanEffect = loans.reduce((sum, loan) => {
-      if (loan.paid) return sum;
-      return loan.kind === "lent" ? sum - loan.amount : sum + loan.amount;
-    }, 0);
-
-    return txTotal + loanEffect;
   }
 
   static sumByKind(transactions: Transaction[], kind: TransactionKind): number {
@@ -51,9 +39,9 @@ export class FinanceCalculator {
    * Quanto já está comprometido no PRÓXIMO mês:
    * - todas as despesas recorrentes (assinaturas, aluguel...) tendem a se repetir
    * - parcelas de compras parceladas que ainda não terminaram
-   * - empréstimos que peguei (borrowed) ainda não pagos, com vencimento no próximo mês
+   * (Empréstimos não entram aqui — ver LoanCalculator.)
    */
-  static nextMonthCommitment(transactions: Transaction[], loans: Loan[]): number {
+  static nextMonthCommitment(transactions: Transaction[]): number {
     const recurringExpenses = transactions
       .filter((t) => t.kind === "expense" && t.recurrence === "recurring")
       .reduce((sum, t) => sum + t.amount, 0);
@@ -68,26 +56,7 @@ export class FinanceCalculator {
       )
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const now = new Date();
-    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-
-    const borrowedDueNextMonth = loans
-      .filter(
-        (l) => l.kind === "borrowed" && !l.paid && l.dueDate && this.isSameMonth(l.dueDate, nextMonth)
-      )
-      .reduce((sum, l) => sum + l.amount, 0);
-
-    return recurringExpenses + remainingInstallments + borrowedDueNextMonth;
-  }
-
-  /** Quanto eu devo RECEBER de volta no próximo mês (empréstimos que fiz). */
-  static nextMonthReceivable(loans: Loan[]): number {
-    const now = new Date();
-    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-
-    return loans
-      .filter((l) => l.kind === "lent" && !l.paid && l.dueDate && this.isSameMonth(l.dueDate, nextMonth))
-      .reduce((sum, l) => sum + l.amount, 0);
+    return recurringExpenses + remainingInstallments;
   }
 
   static totalsByCategory(transactions: Transaction[], kind: TransactionKind): CategoryTotal[] {

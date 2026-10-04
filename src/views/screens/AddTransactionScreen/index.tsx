@@ -11,22 +11,26 @@ import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
 } from "@/models/types";
+import { digitsToMoneyMask, moneyMaskToNumber, numberToMoneyMask } from "@/utils/format";
 import * as S from "./styles";
 
 export default function AddTransactionScreen() {
-  const { addTransaction } = useFinanceController();
+  const { transactions, addTransaction, updateTransaction } = useFinanceController();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
-  const [kind, setKind] = useState<TransactionKind>(route.params?.kind ?? "expense");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
+  // Com `id` nos params a tela abre em modo edição, preenchida com o registro existente.
+  const editing = transactions.find((t) => t.id === route.params?.id);
+
+  const [kind, setKind] = useState<TransactionKind>(editing?.kind ?? route.params?.kind ?? "expense");
+  const [amount, setAmount] = useState(editing ? numberToMoneyMask(editing.amount) : "");
+  const [description, setDescription] = useState(editing?.description ?? "");
   const [category, setCategory] = useState<string>(
-    kind === "income" ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]
+    editing?.category ?? (kind === "income" ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0])
   );
-  const [recurrence, setRecurrence] = useState<RecurrenceType>("none");
-  const [installmentTotal, setInstallmentTotal] = useState("2");
-  const [installmentCurrent, setInstallmentCurrent] = useState("1");
+  const [recurrence, setRecurrence] = useState<RecurrenceType>(editing?.recurrence ?? "none");
+  const [installmentTotal, setInstallmentTotal] = useState(String(editing?.installments?.total ?? 2));
+  const [installmentCurrent, setInstallmentCurrent] = useState(String(editing?.installments?.current ?? 1));
 
   const categories = kind === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
@@ -37,7 +41,7 @@ export default function AddTransactionScreen() {
   };
 
   const handleSave = async () => {
-    const parsedAmount = parseFloat(amount.replace(",", "."));
+    const parsedAmount = moneyMaskToNumber(amount);
     if (!parsedAmount || parsedAmount <= 0) {
       Alert.alert("Valor inválido", "Informe um valor maior que zero.");
       return;
@@ -54,15 +58,17 @@ export default function AddTransactionScreen() {
       installments = { total, current };
     }
 
-    await addTransaction({
+    const data = {
       kind,
       amount: parsedAmount,
       category,
       description,
-      date: new Date().toISOString(),
+      date: editing?.date ?? new Date().toISOString(),
       recurrence,
       installments,
-    });
+    };
+    if (editing) await updateTransaction(editing.id, data);
+    else await addTransaction(data);
 
     navigation.goBack();
   };
@@ -71,7 +77,10 @@ export default function AddTransactionScreen() {
     <S.Container>
       <S.Scroll keyboardShouldPersistTaps="handled">
         <FadeSlideIn>
-          <S.Title>{kind === "income" ? "Nova entrada" : "Nova saída"}</S.Title>
+          <S.Title>
+            {editing ? "Editar " : "Nova "}
+            {kind === "income" ? "entrada" : "saída"}
+          </S.Title>
 
           <SegmentedControl
             value={kind}
@@ -85,9 +94,9 @@ export default function AddTransactionScreen() {
           <S.Label>Valor (R$)</S.Label>
           <S.AmountInput
             value={amount}
-            onChangeText={setAmount}
+            onChangeText={(text: string) => setAmount(digitsToMoneyMask(text))}
             placeholder="0,00"
-            keyboardType="decimal-pad"
+            keyboardType="number-pad"
           />
 
           <S.Label>Descrição</S.Label>
