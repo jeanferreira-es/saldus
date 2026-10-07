@@ -28,6 +28,27 @@ export interface Transaction {
   date: string; // ISO string
   recurrence: RecurrenceType;
   installments?: Installments;
+  recurrenceId?: string; // lançamento gerado a partir de uma Recurrence
+}
+
+/**
+ * Regra de uma compra recorrente ou parcelada. Cada mês vira um lançamento
+ * (Transaction) próprio, gerado automaticamente a partir desta regra.
+ * - "recurring": gera um lançamento por mês até ser cancelada
+ * - "installment": gera um lançamento por parcela até a última
+ * Cancelar só interrompe as gerações futuras — os lançamentos já gerados ficam no histórico.
+ */
+export interface Recurrence {
+  id: string;
+  kind: TransactionKind;
+  type: Exclude<RecurrenceType, "none">;
+  amount: number;
+  category: string;
+  description: string;
+  startDate: string; // ISO string — data da primeira ocorrência
+  installments?: { start: number; total: number }; // parcela da primeira ocorrência e total
+  generatedCount: number; // quantas ocorrências (a partir de startDate) já viraram lançamento
+  canceledAt?: string; // ISO string
 }
 
 /**

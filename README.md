@@ -2,15 +2,18 @@
 
 App de controle financeiro pessoal em **React Native + Expo (TypeScript)**, com
 **arquitetura MVC**, estilização em **styled-components** e persistência em
-**AsyncStorage**.
+**SQLite** (`expo-sqlite`).
 
 ## Funcionalidades
 
 - **Saldo**: acompanhe o saldo atual e adicione entradas de dinheiro.
 - **Saídas por categoria**: registre despesas (Alimentação, Moradia, Transporte...).
-- **À vista, recorrente ou parcelada**: cada despesa é classificada e isso alimenta
-  o cálculo de **quanto já está comprometido no próximo mês** (recorrentes + parcelas
-  em aberto + empréstimos a pagar com vencimento no mês seguinte).
+- **À vista, recorrente ou parcelada**: compras recorrentes e parceladas são cadastradas
+  uma vez e o app **lança automaticamente** a ocorrência de cada mês. Isso alimenta o
+  cálculo de **quanto já está comprometido no próximo mês** (recorrentes ativas +
+  parcelas que ainda caem no mês seguinte).
+- **Cancelar recorrência**: pelo menu do lançamento ou tocando no card "Comprometido"
+  na tela inicial. Os lançamentos já feitos continuam no histórico.
 - **Empréstimos**: o que você **emprestou** (a receber) e o que **pegou emprestado**
   (a pagar), com pessoa, valor, vencimento e status de quitação.
 - **Tema claro / escuro / automático**, em tons de laranja.
@@ -27,8 +30,10 @@ src/
   models/          → MODEL: entidades, regras de negócio e persistência
     types.ts             tipos do domínio (Transaction, Loan, categorias)
     FinanceCalculator.ts regras de negócio puras (saldo, comprometido, totais)
-    TransactionRepository.ts  acesso ao AsyncStorage para transações
-    LoanRepository.ts         acesso ao AsyncStorage para empréstimos
+    RecurrenceCalculator.ts   regras de compras recorrentes/parceladas (datas, comprometido)
+    TransactionRepository.ts  acesso ao SQLite para transações
+    LoanRepository.ts         acesso ao SQLite para empréstimos
+    RecurrenceRepository.ts   acesso ao SQLite para recorrências + geração dos lançamentos mensais
     ThemeRepository.ts        acesso ao AsyncStorage para a preferência de tema
 
   controllers/     → CONTROLLER: ponte entre Model e View

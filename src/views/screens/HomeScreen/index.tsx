@@ -7,7 +7,7 @@ import Card from "@/views/components/Card";
 import AnimatedPressable from "@/views/components/AnimatedPressable";
 import TransactionListItem from "@/views/components/TransactionListItem";
 import { formatCurrency, formatMonthLabel } from "@/utils/format";
-import { showRecordActions } from "@/utils/recordActions";
+import { useTransactionActions } from "@/views/hooks/useTransactionActions";
 import { FinanceCalculator } from "@/models/FinanceCalculator";
 import * as S from "./styles";
 
@@ -15,7 +15,7 @@ const HIDDEN_MASK = "••••••";
 
 export default function HomeScreen() {
   const theme = useTheme();
-  const { transactions, balance, commitment, removeTransaction } = useFinanceController();
+  const { transactions, balance, commitment } = useFinanceController();
   const navigation = useNavigation<any>();
   const [hideBalance, setHideBalance] = useState(false);
 
@@ -25,11 +25,7 @@ export default function HomeScreen() {
   const monthExpense = FinanceCalculator.sumByKind(monthTx, "expense");
   const recent = transactions.slice(0, 5);
 
-  const handlePress = (id: string) =>
-    showRecordActions({
-      onEdit: () => navigation.navigate("AddTransaction", { id }),
-      onDelete: () => removeTransaction(id),
-    });
+  const handlePress = useTransactionActions();
 
   return (
     <S.Container edges={["top"]}>
@@ -69,14 +65,17 @@ export default function HomeScreen() {
           </S.QuickActions>
         </S.BalanceCard>
 
-        <Card style={{ marginBottom: 24 }}>
-          <S.CommitmentRow>
-            <Ionicons name="alert-circle-outline" size={20} color={theme.warning} />
-            <S.CommitmentTitle>Comprometido no próximo mês</S.CommitmentTitle>
-          </S.CommitmentRow>
-          <S.CommitmentValue>{formatCurrency(commitment)}</S.CommitmentValue>
-          <S.CommitmentHint>Assinaturas e parcelas em aberto</S.CommitmentHint>
-        </Card>
+        <AnimatedPressable onPress={() => navigation.navigate("Recurrences")}>
+          <Card style={{ marginBottom: 24 }}>
+            <S.CommitmentRow>
+              <Ionicons name="alert-circle-outline" size={20} color={theme.warning} />
+              <S.CommitmentTitle>Comprometido no próximo mês</S.CommitmentTitle>
+              <Ionicons name="chevron-forward" size={18} color={theme.textSecondary} />
+            </S.CommitmentRow>
+            <S.CommitmentValue>{hideBalance ? HIDDEN_MASK : formatCurrency(commitment)}</S.CommitmentValue>
+            <S.CommitmentHint>Assinaturas e parcelas em aberto · toque para gerenciar</S.CommitmentHint>
+          </Card>
+        </AnimatedPressable>
 
         <S.SectionTitle>{formatMonthLabel(now)}</S.SectionTitle>
         <S.MonthRow>
@@ -104,8 +103,8 @@ export default function HomeScreen() {
               <TransactionListItem
                 key={t.id}
                 transaction={t}
-                onPress={() => handlePress(t.id)}
-                onLongPress={() => handlePress(t.id)}
+                onPress={() => handlePress(t)}
+                onLongPress={() => handlePress(t)}
               />
             ))
           )}

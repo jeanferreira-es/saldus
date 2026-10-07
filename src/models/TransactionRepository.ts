@@ -3,12 +3,8 @@
  * Encapsula todo o acesso ao SQLite para Transactions.
  * O Controller nunca fala com o banco diretamente, sempre por aqui.
  */
-import { getDatabase } from "@/database";
+import { getDatabase, generateId } from "@/database";
 import { Transaction } from "./types";
-
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
 
 type TransactionRow = {
   id: string;
@@ -20,6 +16,7 @@ type TransactionRow = {
   recurrence: string;
   installments_total: number | null;
   installments_current: number | null;
+  recurrence_id: string | null;
 };
 
 function rowToTransaction(row: TransactionRow): Transaction {
@@ -35,6 +32,7 @@ function rowToTransaction(row: TransactionRow): Transaction {
       row.installments_total != null && row.installments_current != null
         ? { total: row.installments_total, current: row.installments_current }
         : undefined,
+    recurrenceId: row.recurrence_id ?? undefined,
   };
 }
 
@@ -42,7 +40,7 @@ export class TransactionRepository {
   static async getAll(): Promise<Transaction[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<TransactionRow>(
-      "SELECT * FROM transactions ORDER BY rowid DESC"
+      "SELECT * FROM transactions ORDER BY date DESC, rowid DESC"
     );
     return rows.map(rowToTransaction);
   }
@@ -52,8 +50,9 @@ export class TransactionRepository {
     const id = generateId();
     await db.runAsync(
       `INSERT INTO transactions
-        (id, kind, amount, category, description, date, recurrence, installments_total, installments_current)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (id, kind, amount, category, description, date, recurrence, installments_total, installments_current,
+         recurrence_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         data.kind,
@@ -64,6 +63,7 @@ export class TransactionRepository {
         data.recurrence,
         data.installments?.total ?? null,
         data.installments?.current ?? null,
+        data.recurrenceId ?? null,
       ]
     );
     return this.getAll();

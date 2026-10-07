@@ -15,7 +15,7 @@ import { digitsToMoneyMask, moneyMaskToNumber, numberToMoneyMask } from "@/utils
 import * as S from "./styles";
 
 export default function AddTransactionScreen() {
-  const { transactions, addTransaction, updateTransaction } = useFinanceController();
+  const { transactions, addTransaction, updateTransaction, addRecurrence } = useFinanceController();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
@@ -58,17 +58,39 @@ export default function AddTransactionScreen() {
       installments = { total, current };
     }
 
-    const data = {
-      kind,
-      amount: parsedAmount,
-      category,
-      description,
-      date: editing?.date ?? new Date().toISOString(),
-      recurrence,
-      installments,
-    };
-    if (editing) await updateTransaction(editing.id, data);
-    else await addTransaction(data);
+    if (editing) {
+      // Edita só este lançamento; o tipo (recorrente/parcelada) e o vínculo com a regra não mudam.
+      await updateTransaction(editing.id, {
+        kind,
+        amount: parsedAmount,
+        category,
+        description,
+        date: editing.date,
+        recurrence: editing.recurrence,
+        installments: editing.installments,
+        recurrenceId: editing.recurrenceId,
+      });
+    } else if (recurrence !== "none") {
+      // Vira uma regra: este mês é lançado agora e os próximos, automaticamente.
+      await addRecurrence({
+        kind,
+        type: recurrence,
+        amount: parsedAmount,
+        category,
+        description,
+        startDate: new Date().toISOString(),
+        installments: installments && { start: installments.current, total: installments.total },
+      });
+    } else {
+      await addTransaction({
+        kind,
+        amount: parsedAmount,
+        category,
+        description,
+        date: new Date().toISOString(),
+        recurrence,
+      });
+    }
 
     navigation.goBack();
   };
@@ -82,14 +104,16 @@ export default function AddTransactionScreen() {
             {kind === "income" ? "entrada" : "saída"}
           </S.Title>
 
-          <SegmentedControl
-            value={kind}
-            onChange={handleKindChange}
-            options={[
-              { label: "Entrada", value: "income" },
-              { label: "Saída", value: "expense" },
-            ]}
-          />
+          {!editing?.recurrenceId && (
+            <SegmentedControl
+              value={kind}
+              onChange={handleKindChange}
+              options={[
+                { label: "Entrada", value: "income" },
+                { label: "Saída", value: "expense" },
+              ]}
+            />
+          )}
 
           <S.Label>Valor (R$)</S.Label>
           <S.AmountInput
@@ -120,7 +144,16 @@ export default function AddTransactionScreen() {
             })}
           </S.ChipsWrap>
 
-          {kind === "expense" && (
+          {editing?.recurrenceId && (
+            <S.Hint>
+              {editing.recurrence === "installment"
+                ? `Parcela ${editing.installments?.current}/${editing.installments?.total} de uma compra parcelada.`
+                : "Lançamento de uma compra recorrente."}{" "}
+              As alterações valem só para este mês.
+            </S.Hint>
+          )}
+
+          {kind === "expense" && !editing && (
             <>
               <S.Label>Tipo de compra</S.Label>
               <SegmentedControl
@@ -135,9 +168,9 @@ export default function AddTransactionScreen() {
               <S.Hint>
                 {recurrence === "none" && "Pago agora, não afeta os próximos meses."}
                 {recurrence === "recurring" &&
-                  "Repete todo mês (assinatura, aluguel, etc.) e entra no valor comprometido do próximo mês."}
+                  "Lançada automaticamente todo mês (assinatura, aluguel, etc.) até você cancelar. Entra no valor comprometido do próximo mês."}
                 {recurrence === "installment" &&
-                  "Compra parcelada: informe o valor de UMA parcela e quantas faltam."}
+                  "Informe o valor de UMA parcela e qual parcela é a deste mês. As próximas são lançadas automaticamente."}
               </S.Hint>
 
               {recurrence === "installment" && (

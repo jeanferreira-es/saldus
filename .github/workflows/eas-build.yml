@@ -1,0 +1,54 @@
+name: EAS Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Perfil do eas.json"
+        type: choice
+        options: [preview, production, development]
+        default: preview
+      platform:
+        description: "Plataforma"
+        type: choice
+        options: [all, android, ios]
+        default: all
+
+# Um push novo cancela o build anterior ainda na fila desta mesma branch.
+concurrency:
+  group: eas-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci
+
+      - name: Checagem de tipos
+        run: npx tsc --noEmit
+
+      # --no-wait: o job só envia o build; o acompanhamento fica no painel do Expo,
+      # sem gastar minutos do GitHub esperando a fila do EAS.
+      - name: Disparar build no EAS
+        run: >
+          eas build
+          --profile ${{ inputs.profile || 'preview' }}
+          --platform ${{ inputs.platform || 'all' }}
+          --non-interactive
+          --no-wait
+          --message "${{ github.sha }}"

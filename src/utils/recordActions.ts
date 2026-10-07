@@ -3,13 +3,15 @@ import { Alert } from "react-native";
 interface RecordActionsOptions {
   onEdit: () => void;
   onDelete: () => void;
+  /** Se informado, adiciona a opção de cancelar a compra recorrente deste lançamento. */
+  onCancelRecurrence?: () => void;
 }
 
 /**
  * Abre o menu de ações de um registro (Editar / Excluir). Cada opção pede
  * uma confirmação antes de executar a ação.
  */
-export function showRecordActions({ onEdit, onDelete }: RecordActionsOptions) {
+export function showRecordActions({ onEdit, onDelete, onCancelRecurrence }: RecordActionsOptions) {
   const confirmEdit = () =>
     Alert.alert("Editar lançamento", "Deseja editar este registro?", [
       { text: "Cancelar", style: "cancel" },
@@ -25,6 +27,24 @@ export function showRecordActions({ onEdit, onDelete }: RecordActionsOptions) {
   Alert.alert("Lançamento", "O que deseja fazer com este registro?", [
     { text: "Cancelar", style: "cancel" },
     { text: "Editar", onPress: confirmEdit },
+    ...(onCancelRecurrence
+      ? [{ text: "Cancelar recorrência", onPress: () => confirmCancelRecurrence(onCancelRecurrence) }]
+      : []),
     { text: "Excluir", style: "destructive", onPress: confirmDelete },
   ]);
+}
+
+/**
+ * Confirma o cancelamento de uma compra recorrente. Os lançamentos já feitos
+ * continuam no histórico — só param de ser gerados os dos próximos meses.
+ */
+export function confirmCancelRecurrence(onConfirm: () => void) {
+  Alert.alert(
+    "Cancelar recorrência",
+    "Os lançamentos já feitos continuam no histórico, mas nenhum novo será lançado a partir de agora.",
+    [
+      { text: "Voltar", style: "cancel" },
+      { text: "Cancelar recorrência", style: "destructive", onPress: onConfirm },
+    ]
+  );
 }

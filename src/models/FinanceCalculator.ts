@@ -35,30 +35,6 @@ export class FinanceCalculator {
     return transactions.filter((t) => this.isSameMonth(t.date, ref));
   }
 
-  /**
-   * Quanto já está comprometido no PRÓXIMO mês:
-   * - todas as despesas recorrentes (assinaturas, aluguel...) tendem a se repetir
-   * - parcelas de compras parceladas que ainda não terminaram
-   * (Empréstimos não entram aqui — ver LoanCalculator.)
-   */
-  static nextMonthCommitment(transactions: Transaction[]): number {
-    const recurringExpenses = transactions
-      .filter((t) => t.kind === "expense" && t.recurrence === "recurring")
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    const remainingInstallments = transactions
-      .filter(
-        (t) =>
-          t.kind === "expense" &&
-          t.recurrence === "installment" &&
-          t.installments &&
-          t.installments.current < t.installments.total
-      )
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    return recurringExpenses + remainingInstallments;
-  }
-
   static totalsByCategory(transactions: Transaction[], kind: TransactionKind): CategoryTotal[] {
     const map = new Map<string, number>();
     transactions

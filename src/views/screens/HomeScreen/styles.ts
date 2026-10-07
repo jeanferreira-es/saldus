@@ -72,6 +72,7 @@ export const CommitmentRow = styled.View`
 `;
 
 export const CommitmentTitle = styled.Text`
+  flex: 1;
   font-size: 14px;
   font-family: ${fonts.semiBold};
   color: ${({ theme }) => theme.text};

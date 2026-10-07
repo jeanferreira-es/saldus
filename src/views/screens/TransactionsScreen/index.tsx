@@ -10,13 +10,13 @@ import FadeSlideIn from "@/views/components/FadeSlideIn";
 import { TransactionKind } from "@/models/types";
 import { FinanceCalculator } from "@/models/FinanceCalculator";
 import { formatCurrency } from "@/utils/format";
-import { showRecordActions } from "@/utils/recordActions";
+import { useTransactionActions } from "@/views/hooks/useTransactionActions";
 import * as S from "./styles";
 
 type FilterKind = "all" | TransactionKind;
 
 export default function TransactionsScreen() {
-  const { transactions, removeTransaction } = useFinanceController();
+  const { transactions } = useFinanceController();
   const navigation = useNavigation<any>();
   const [filter, setFilter] = useState<FilterKind>("all");
 
@@ -30,11 +30,7 @@ export default function TransactionsScreen() {
     return FinanceCalculator.totalsByCategory(transactions, filter);
   }, [transactions, filter]);
 
-  const handlePress = (id: string) =>
-    showRecordActions({
-      onEdit: () => navigation.navigate("AddTransaction", { id }),
-      onDelete: () => removeTransaction(id),
-    });
+  const handlePress = useTransactionActions();
 
   return (
     <S.Container edges={["top"]}>
@@ -83,8 +79,8 @@ export default function TransactionsScreen() {
           <FadeSlideIn delay={Math.min(index, 8) * 30}>
             <TransactionListItem
               transaction={item}
-              onPress={() => handlePress(item.id)}
-              onLongPress={() => handlePress(item.id)}
+              onPress={() => handlePress(item)}
+              onLongPress={() => handlePress(item)}
             />
           </FadeSlideIn>
         )}

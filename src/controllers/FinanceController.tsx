@@ -1,20 +1,24 @@
 /**
  * CONTROLLER LAYER
  * Faz a ponte entre o Model (repositórios + regras de negócio) e a View.
- * As telas nunca acessam AsyncStorage nem os repositórios diretamente —
+ * As telas nunca acessam o banco nem os repositórios diretamente —
  * sempre passam por aqui através do hook `useFinanceController`.
  */
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { Transaction, Loan, LoanGroup } from "@/models/types";
+import { AppState } from "react-native";
+import { Transaction, Loan, LoanGroup, Recurrence } from "@/models/types";
 import { TransactionRepository } from "@/models/TransactionRepository";
 import { LoanRepository } from "@/models/LoanRepository";
+import { RecurrenceRepository } from "@/models/RecurrenceRepository";
 import { FinanceCalculator } from "@/models/FinanceCalculator";
 import { LoanCalculator } from "@/models/LoanCalculator";
+import { RecurrenceCalculator } from "@/models/RecurrenceCalculator";
 
 interface FinanceControllerValue {
   loaded: boolean;
   transactions: Transaction[];
   loans: Loan[];
+  recurrences: Recurrence[];
   loanGroups: LoanGroup[];
   balance: number;
   commitment: number;
@@ -23,6 +27,8 @@ interface FinanceControllerValue {
   addTransaction: (data: Omit<Transaction, "id">) => Promise<void>;
   updateTransaction: (id: string, data: Omit<Transaction, "id">) => Promise<void>;
   removeTransaction: (id: string) => Promise<void>;
+  addRecurrence: (data: Omit<Recurrence, "id" | "generatedCount" | "canceledAt">) => Promise<void>;
+  cancelRecurrence: (id: string) => Promise<void>;
   addLoan: (data: Omit<Loan, "id">) => Promise<void>;
   updateLoan: (id: string, data: Omit<Loan, "id">) => Promise<void>;
   removeLoan: (id: string) => Promise<void>;
@@ -33,15 +39,30 @@ const FinanceControllerContext = createContext<FinanceControllerValue | undefine
 export function FinanceControllerProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [recurrences, setRecurrences] = useState<Recurrence[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  const reloadTransactionsAndRecurrences = async () => {
+    const [tx, rec] = await Promise.all([TransactionRepository.getAll(), RecurrenceRepository.getAll()]);
+    setTransactions(tx);
+    setRecurrences(rec);
+  };
 
   useEffect(() => {
     (async () => {
-      const [tx, ln] = await Promise.all([TransactionRepository.getAll(), LoanRepository.getAll()]);
-      setTransactions(tx);
+      await RecurrenceRepository.generateDue(new Date());
+      const [ln] = await Promise.all([LoanRepository.getAll(), reloadTransactionsAndRecurrences()]);
       setLoans(ln);
       setLoaded(true);
     })();
+
+    // O mês pode virar com o app em segundo plano: ao voltar, lança o que venceu.
+    const subscription = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+      const created = await RecurrenceRepository.generateDue(new Date());
+      if (created > 0) await reloadTransactionsAndRecurrences();
+    });
+    return () => subscription.remove();
   }, []);
 
   const addTransaction = async (data: Omit<Transaction, "id">) => {
@@ -55,8 +76,21 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
   };
 
   const removeTransaction = async (id: string) => {
-    const updated = await TransactionRepository.remove(id);
-    setTransactions(updated);
+    const recurrenceId = transactions.find((t) => t.id === id)?.recurrenceId;
+    await TransactionRepository.remove(id);
+    // Excluir o único lançamento de uma recorrência desfaz o cadastro dela por inteiro.
+    if (recurrenceId) await RecurrenceRepository.removeIfEmpty(recurrenceId);
+    await reloadTransactionsAndRecurrences();
+  };
+
+  const addRecurrence = async (data: Omit<Recurrence, "id" | "generatedCount" | "canceledAt">) => {
+    await RecurrenceRepository.add(data);
+    await reloadTransactionsAndRecurrences();
+  };
+
+  const cancelRecurrence = async (id: string) => {
+    await RecurrenceRepository.cancel(id);
+    await reloadTransactionsAndRecurrences();
   };
 
   const addLoan = async (data: Omit<Loan, "id">) => {
@@ -75,7 +109,7 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
   };
 
   const balance = useMemo(() => FinanceCalculator.balance(transactions), [transactions]);
-  const commitment = useMemo(() => FinanceCalculator.nextMonthCommitment(transactions), [transactions]);
+  const commitment = useMemo(() => RecurrenceCalculator.nextMonthCommitment(recurrences, new Date()), [recurrences]);
   const loanGroups = useMemo(() => LoanCalculator.groupByPerson(loans), [loans]);
   const totalReceivable = useMemo(() => LoanCalculator.totalReceivable(loans), [loans]);
   const totalPayable = useMemo(() => LoanCalculator.totalPayable(loans), [loans]);
@@ -84,6 +118,7 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
     loaded,
     transactions,
     loans,
+    recurrences,
     loanGroups,
     balance,
     commitment,
@@ -92,6 +127,8 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
     addTransaction,
     updateTransaction,
     removeTransaction,
+    addRecurrence,
+    cancelRecurrence,
     addLoan,
     updateLoan,
     removeLoan,

@@ -2,12 +2,8 @@
  * MODEL LAYER — persistência.
  * Encapsula todo o acesso ao SQLite para Loans.
  */
-import { getDatabase } from "@/database";
+import { getDatabase, generateId } from "@/database";
 import { Loan } from "./types";
-
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
 
 type LoanRow = {
   id: string;

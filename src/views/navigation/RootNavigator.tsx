@@ -13,6 +13,7 @@ import LoansScreen from "@/views/screens/LoansScreen";
 import LoanDetailScreen from "@/views/screens/LoanDetailScreen";
 import AddLoanScreen from "@/views/screens/AddLoanScreen";
 import SettingsScreen from "@/views/screens/SettingsScreen";
+import RecurrencesScreen from "@/views/screens/RecurrencesScreen";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ function HomeStackNavigator() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="AddTransaction" component={AddTransactionScreen} options={{ presentation: "modal" }} />
+      <HomeStack.Screen name="Recurrences" component={RecurrencesScreen} />
     </HomeStack.Navigator>
   );
 }
