@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6B7EFF"/>
+      <stop offset="1" stop-color="#3A4FD1"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.2" r="0.8">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="232" fill="url(#glow)"/>
+  <g transform="translate(512 512) scale(1.14) translate(-512 -512)">
+  <defs>
+    <linearGradient id="billFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E4E9FF"/>
+    </linearGradient>
+    <linearGradient id="billMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E6EAFF"/>
+      <stop offset="1" stop-color="#C9D2FF"/>
+    </linearGradient>
+    <linearGradient id="billBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C4CDFF"/>
+      <stop offset="1" stop-color="#A3B0FF"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7A8BFF"/>
+      <stop offset="1" stop-color="#3A4FD1"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18" result="blur"/>
+      <feOffset in="blur" dy="16" result="offset"/>
+      <feFlood flood-color="#141A5C" flood-opacity="0.35"/>
+      <feComposite operator="in" in2="offset"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- notas em leque, giradas a partir da base -->
+  <g transform="translate(0 -28)">
+    <rect x="232" y="392" width="560" height="320" rx="48" fill="url(#billBack)" transform="rotate(-18 512 700)" filter="url(#shadow)"/>
+    <rect x="232" y="392" width="560" height="320" rx="48" fill="url(#billMid)" transform="rotate(-9 512 700)" filter="url(#shadow)"/>
+
+    <g filter="url(#shadow)">
+      <rect x="232" y="392" width="560" height="320" rx="48" fill="url(#billFront)"/>
+      <rect x="262" y="422" width="500" height="260" rx="26" fill="none" stroke="#D3DAFF" stroke-width="6"/>
+      <circle cx="322" cy="552" r="20" fill="#D3DAFF"/>
+      <circle cx="702" cy="552" r="20" fill="#D3DAFF"/>
+
+      <circle cx="512" cy="552" r="108" fill="url(#coin)"/>
+      <circle cx="512" cy="552" r="86" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="7"/>
+      <g fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M546 512 C538 498 526 492 510 492 C489 492 476 503 476 519 C476 537 493 543 512 549 C533 556 550 564 550 585 C550 602 535 613 512 613 C493 613 478 606 472 591"/>
+        <path d="M512 470 V634"/>
+      </g>
+    </g>
+  </g>
+</g>
+</svg>

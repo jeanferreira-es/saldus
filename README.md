@@ -75,13 +75,19 @@ npx expo start
 Escaneie o QR code com o **Expo Go** (Android) ou a câmera (iOS), ou aperte
 `a` / `i` no terminal para abrir num emulador.
 
+## Atualizações sem gerar APK (EAS Update)
+
+Mudanças de código podem ser enviadas direto para o APK instalado, e branches de
+feature podem ser testadas no APK de preview. Veja [EAS_UPDATE.md](EAS_UPDATE.md).
+
 ## Personalizando
 ß
 - **Cores**: `src/views/theme/palette.ts` (`lightPalette` / `darkPalette`).
 - **Categorias**: `EXPENSE_CATEGORIES` / `INCOME_CATEGORIES` em `src/models/types.ts`.
 - **Regras de negócio** (ex: como o "comprometido no próximo mês" é calculado):
   `src/models/FinanceCalculator.ts`.
-- **Ícone/Splash**: PNGs finais em `assets/`.
+- **Ícone/Splash**: a fonte é `assets/logo/mark.svg`; edite-a e rode `npm run icons`
+  para regerar os PNGs em `assets/` (ícone, adaptive icon, splash e favicon).
 
 ## Próximos passos sugeridos
 
