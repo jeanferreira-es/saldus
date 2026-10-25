@@ -60,7 +60,7 @@ export function generateId(): string {
  * Migrações versionadas via `PRAGMA user_version`: cada função roda uma única vez,
  * em ordem, dentro de uma transação. Para evoluir o schema, adicione ao final.
  */
-const MIGRATIONS: ((db: SQLite.SQLiteDatabase) => Promise<void>)[] = [migrateToRecurrences];
+const MIGRATIONS: ((db: SQLite.SQLiteDatabase) => Promise<void>)[] = [migrateToRecurrences, createBankDeposits];
 
 async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
   const row = await db.getFirstAsync<{ user_version: number }>("PRAGMA user_version");
@@ -168,4 +168,19 @@ async function migrateToRecurrences(db: SQLite.SQLiteDatabase): Promise<void> {
       await db.runAsync("UPDATE transactions SET recurrence_id = ? WHERE id = ?", [id, row.id]);
     }
   }
+}
+
+/** v2: depósitos detectados pelas notificações dos bancos (Android). */
+async function createBankDeposits(db: SQLite.SQLiteDatabase): Promise<void> {
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS bank_deposits (
+      id TEXT PRIMARY KEY,
+      bank_id TEXT NOT NULL,
+      sender TEXT NOT NULL,
+      amount REAL NOT NULL,
+      date TEXT NOT NULL,
+      text TEXT NOT NULL,
+      status TEXT NOT NULL
+    );
+  `);
 }

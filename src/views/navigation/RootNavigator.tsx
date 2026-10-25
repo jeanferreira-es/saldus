@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeController } from "@/controllers/ThemeController";
+import { useBankDepositController } from "@/controllers/BankDepositController";
 import { fonts } from "@/views/theme/fonts";
 
 import HomeScreen from "@/views/screens/HomeScreen";
@@ -14,11 +15,13 @@ import LoanDetailScreen from "@/views/screens/LoanDetailScreen";
 import AddLoanScreen from "@/views/screens/AddLoanScreen";
 import SettingsScreen from "@/views/screens/SettingsScreen";
 import RecurrencesScreen from "@/views/screens/RecurrencesScreen";
+import BankDepositsScreen from "@/views/screens/BankDepositsScreen";
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 const TransactionsStack = createNativeStackNavigator();
 const LoansStack = createNativeStackNavigator();
+const SettingsStack = createNativeStackNavigator();
 
 function HomeStackNavigator() {
   return (
@@ -53,6 +56,15 @@ function LoansStackNavigator() {
   );
 }
 
+function SettingsStackNavigator() {
+  return (
+    <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
+      <SettingsStack.Screen name="SettingsMain" component={SettingsScreen} />
+      <SettingsStack.Screen name="BankDeposits" component={BankDepositsScreen} />
+    </SettingsStack.Navigator>
+  );
+}
+
 const ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   Início: "home",
   "Transações": "swap-horizontal",
@@ -62,6 +74,7 @@ const ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 export default function RootNavigator() {
   const { colors, isDark } = useThemeController();
+  const { pending } = useBankDepositController();
 
   const navTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),
@@ -96,7 +109,11 @@ export default function RootNavigator() {
         <Tab.Screen name="Início" component={HomeStackNavigator} />
         <Tab.Screen name="Transações" component={TransactionsStackNavigator} />
         <Tab.Screen name="Empréstimos" component={LoansStackNavigator} />
-        <Tab.Screen name="Ajustes" component={SettingsScreen} />
+        <Tab.Screen
+          name="Ajustes"
+          component={SettingsStackNavigator}
+          options={{ tabBarBadge: pending.length > 0 ? pending.length : undefined }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );

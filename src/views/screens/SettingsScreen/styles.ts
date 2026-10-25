@@ -39,6 +39,19 @@ export const RowLabel = styled.Text`
   color: ${({ theme }) => theme.text};
 `;
 
+export const Counter = styled.Text`
+  min-width: 22px;
+  padding-horizontal: 6px;
+  border-radius: 11px;
+  overflow: hidden;
+  text-align: center;
+  font-size: 12px;
+  line-height: 22px;
+  font-family: ${fonts.bold};
+  color: #ffffff;
+  background-color: ${({ theme }) => theme.expense};
+`;
+
 export const Footer = styled.Text`
   font-size: 12px;
   font-family: ${fonts.regular};

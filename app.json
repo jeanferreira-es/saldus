@@ -49,12 +49,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "0098d552-f54b-4ead-aca9-b197a80c3059"
+        "projectId": "ecaa60c9-a995-4602-9b33-f2cddce3dca8"
       }
     },
-    "owner": "jeanferreira",
-    "updates": {
-      "url": "https://u.expo.dev/0098d552-f54b-4ead-aca9-b197a80c3059"
-    }
+    "owner": "ferracy"
   }
 }

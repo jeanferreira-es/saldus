@@ -80,6 +80,21 @@ Escaneie o QR code com o **Expo Go** (Android) ou a câmera (iOS), ou aperte
 Mudanças de código podem ser enviadas direto para o APK instalado, e branches de
 feature podem ser testadas no APK de preview. Veja [EAS_UPDATE.md](EAS_UPDATE.md).
 
+## Depósitos automáticos (Android)
+
+Em **Ajustes → Depósitos pelo banco** o app passa a ler as notificações de Pix/transferência
+recebidos nos bancos escolhidos e registra cada entrada conforme a pessoa que enviou:
+**saldo** (receita), **me emprestou** (empréstimo a pagar), **me pagou** (abate do que
+emprestei) ou **ignorar**. Remetentes sem regra ficam aguardando revisão (ou entram direto
+como saldo / são ignorados, conforme a preferência). Saídas continuam manuais.
+
+- Serviço nativo: [modules/bank-notifications](modules/bank-notifications) (`NotificationListenerService`).
+  Só guarda notificações dos pacotes escolhidos que mencionem "R$"; o resto é descartado na hora.
+- Leitura do texto: `src/models/DepositParser.ts` · lista de bancos: `src/models/banks.ts`.
+- Exige build nativa (`eas build`) — não funciona no Expo Go nem no iOS.
+- Android 13+ com APK instalado fora da loja: se o acesso às notificações aparecer bloqueado,
+  vá em *Informações do app → ⋮ → Permitir configurações restritas*.
+
 ## Personalizando
 ß
 - **Cores**: `src/views/theme/palette.ts` (`lightPalette` / `darkPalette`).

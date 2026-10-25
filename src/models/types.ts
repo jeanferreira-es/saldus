@@ -103,7 +103,45 @@ export const INCOME_CATEGORIES = [
   "Freelance",
   "Investimentos",
   "Presente",
+  "Transferência",
   "Outros",
 ] as const;
 
 export type ThemeMode = "light" | "dark" | "system";
+
+/**
+ * O que fazer com um Pix/transferência recebido, detectado pela notificação do banco (só Android):
+ * - "income": entra como receita (soma no saldo)
+ * - "borrowed": a pessoa me emprestou — vira empréstimo a pagar
+ * - "repayment": a pessoa me pagou um empréstimo que eu fiz — abate do valor a receber
+ * - "ignore": descarta (ex: transferência entre minhas próprias contas)
+ */
+export type DepositAction = "income" | "borrowed" | "repayment" | "ignore";
+
+/** Regra por remetente. `name` é como a pessoa aparece nos empréstimos. */
+export interface SenderRule {
+  name: string;
+  action: DepositAction;
+}
+
+/** Remetente sem regra: "ask" deixa o depósito aguardando revisão. */
+export type UnknownSenderPolicy = "ask" | "income" | "ignore";
+
+export interface BankDepositSettings {
+  enabledBanks: string[]; // ids de BANKS (nome do pacote do app no Android)
+  senderRules: SenderRule[];
+  unknownSender: UnknownSenderPolicy;
+}
+
+export type BankDepositStatus = "pending" | DepositAction;
+
+/** Depósito detectado numa notificação. Fica salvo como histórico e para evitar duplicatas. */
+export interface BankDeposit {
+  id: string;
+  bankId: string;
+  sender: string; // como veio na notificação ("" se não deu para identificar)
+  amount: number;
+  date: string; // ISO string
+  text: string; // título + texto da notificação
+  status: BankDepositStatus;
+}

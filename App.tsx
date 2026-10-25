@@ -13,6 +13,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import { ThemeControllerProvider, useThemeController } from "@/controllers/ThemeController";
 import { FinanceControllerProvider } from "@/controllers/FinanceController";
+import { BankDepositControllerProvider } from "@/controllers/BankDepositController";
 import RootNavigator from "@/views/navigation/RootNavigator";
 import { initDatabase } from "@/database";
 
@@ -22,7 +23,9 @@ function AppContent() {
     <StyledThemeProvider theme={colors}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <FinanceControllerProvider>
-        <RootNavigator />
+        <BankDepositControllerProvider>
+          <RootNavigator />
+        </BankDepositControllerProvider>
       </FinanceControllerProvider>
     </StyledThemeProvider>
   );
