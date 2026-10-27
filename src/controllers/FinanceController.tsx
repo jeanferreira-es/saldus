@@ -9,7 +9,7 @@ import { AppState } from "react-native";
 import { Transaction, Loan, LoanGroup, Recurrence } from "@/models/types";
 import { TransactionRepository } from "@/models/TransactionRepository";
 import { LoanRepository } from "@/models/LoanRepository";
-import { RecurrenceRepository } from "@/models/RecurrenceRepository";
+import { RecurrenceRepository, RecurrenceInput } from "@/models/RecurrenceRepository";
 import { FinanceCalculator } from "@/models/FinanceCalculator";
 import { LoanCalculator } from "@/models/LoanCalculator";
 import { RecurrenceCalculator } from "@/models/RecurrenceCalculator";
@@ -27,8 +27,10 @@ interface FinanceControllerValue {
   addTransaction: (data: Omit<Transaction, "id">) => Promise<void>;
   updateTransaction: (id: string, data: Omit<Transaction, "id">) => Promise<void>;
   removeTransaction: (id: string) => Promise<void>;
-  addRecurrence: (data: Omit<Recurrence, "id" | "generatedCount" | "canceledAt">) => Promise<void>;
+  addRecurrence: (data: RecurrenceInput) => Promise<void>;
+  updateRecurrence: (id: string, data: Parameters<typeof RecurrenceRepository.update>[1]) => Promise<void>;
   cancelRecurrence: (id: string) => Promise<void>;
+  removeRecurrence: (id: string) => Promise<void>;
   addLoan: (data: Omit<Loan, "id">) => Promise<void>;
   updateLoan: (id: string, data: Omit<Loan, "id">) => Promise<void>;
   removeLoan: (id: string) => Promise<void>;
@@ -75,21 +77,29 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
     setTransactions(updated);
   };
 
+  // Excluir um lançamento gerado não mexe no gasto futuro: os próximos meses continuam.
   const removeTransaction = async (id: string) => {
-    const recurrenceId = transactions.find((t) => t.id === id)?.recurrenceId;
-    await TransactionRepository.remove(id);
-    // Excluir o único lançamento de uma recorrência desfaz o cadastro dela por inteiro.
-    if (recurrenceId) await RecurrenceRepository.removeIfEmpty(recurrenceId);
+    const updated = await TransactionRepository.remove(id);
+    setTransactions(updated);
+  };
+
+  const addRecurrence = async (data: RecurrenceInput) => {
+    await RecurrenceRepository.add(data);
     await reloadTransactionsAndRecurrences();
   };
 
-  const addRecurrence = async (data: Omit<Recurrence, "id" | "generatedCount" | "canceledAt">) => {
-    await RecurrenceRepository.add(data);
+  const updateRecurrence = async (id: string, data: Parameters<typeof RecurrenceRepository.update>[1]) => {
+    await RecurrenceRepository.update(id, data);
     await reloadTransactionsAndRecurrences();
   };
 
   const cancelRecurrence = async (id: string) => {
     await RecurrenceRepository.cancel(id);
+    await reloadTransactionsAndRecurrences();
+  };
+
+  const removeRecurrence = async (id: string) => {
+    await RecurrenceRepository.remove(id);
     await reloadTransactionsAndRecurrences();
   };
 
@@ -128,7 +138,9 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
     updateTransaction,
     removeTransaction,
     addRecurrence,
+    updateRecurrence,
     cancelRecurrence,
+    removeRecurrence,
     addLoan,
     updateLoan,
     removeLoan,

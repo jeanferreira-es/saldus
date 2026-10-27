@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { useFinanceController } from "@/controllers/FinanceController";
 import { Transaction } from "@/models/types";
+import { RecurrenceCalculator } from "@/models/RecurrenceCalculator";
 import { showRecordActions } from "@/utils/recordActions";
 
 /**
@@ -13,12 +14,12 @@ export function useTransactionActions() {
 
   return (transaction: Transaction) => {
     const recurrence = recurrences.find((r) => r.id === transaction.recurrenceId);
-    const cancellable = recurrence?.type === "recurring" && !recurrence.canceledAt;
+    const cancellable = recurrence != null && RecurrenceCalculator.isActive(recurrence);
 
     showRecordActions({
       onEdit: () => navigation.navigate("AddTransaction", { id: transaction.id }),
       onDelete: () => removeTransaction(transaction.id),
-      onCancelRecurrence: cancellable ? () => cancelRecurrence(recurrence.id) : undefined,
+      onCancelRecurrence: cancellable ? () => cancelRecurrence(recurrence!.id) : undefined,
     });
   };
 }

@@ -43,17 +43,53 @@ export const SummaryCard = styled.View`
   background-color: ${({ theme }) => theme.surfaceAlt};
 `;
 
+export const SummaryRow = styled.View`
+  flex-direction: row;
+  gap: 16px;
+`;
+
+export const SummaryItem = styled.View`
+  flex: 1;
+`;
+
 export const SummaryLabel = styled.Text`
-  font-size: 14px;
+  font-size: 13px;
   font-family: ${fonts.medium};
   color: ${({ theme }) => theme.textSecondary};
 `;
 
 export const SummaryValue = styled.Text`
-  font-size: 32px;
+  font-size: 22px;
   font-family: ${fonts.extraBold};
   margin-top: 4px;
   color: ${({ theme }) => theme.warning};
+`;
+
+export const SummaryHint = styled.Text`
+  font-size: 12px;
+  font-family: ${fonts.regular};
+  margin-top: 12px;
+  color: ${({ theme }) => theme.textSecondary};
+`;
+
+export const AddBtn = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding-vertical: 8px;
+  padding-horizontal: 12px;
+  border-radius: 18px;
+  background-color: ${({ theme }) => theme.primary};
+`;
+
+export const AddBtnText = styled.Text`
+  font-size: 13px;
+  font-family: ${fonts.bold};
+  color: #ffffff;
+`;
+
+export const Spacer = styled.View`
+  height: 20px;
 `;
 
 export const SectionTitle = styled.Text`
@@ -101,6 +137,7 @@ export const Subtitle = styled.Text`
 
 export const Right = styled.View`
   align-items: flex-end;
+  gap: 4px;
   margin-left: 8px;
 `;
 
@@ -108,13 +145,6 @@ export const Amount = styled.Text<{ muted?: boolean }>`
   font-size: 14px;
   font-family: ${fonts.bold};
   color: ${({ muted, theme }) => (muted ? theme.textSecondary : theme.expense)};
-`;
-
-export const CancelText = styled.Text`
-  font-size: 12px;
-  font-family: ${fonts.semiBold};
-  margin-top: 4px;
-  color: ${({ theme }) => theme.primary};
 `;
 
 export const EmptyText = styled.Text`

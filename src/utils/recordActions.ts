@@ -28,23 +28,23 @@ export function showRecordActions({ onEdit, onDelete, onCancelRecurrence }: Reco
     { text: "Cancelar", style: "cancel" },
     { text: "Editar", onPress: confirmEdit },
     ...(onCancelRecurrence
-      ? [{ text: "Cancelar recorrência", onPress: () => confirmCancelRecurrence(onCancelRecurrence) }]
+      ? [{ text: "Interromper gasto futuro", onPress: () => confirmCancelRecurrence(onCancelRecurrence) }]
       : []),
     { text: "Excluir", style: "destructive", onPress: confirmDelete },
   ]);
 }
 
 /**
- * Confirma o cancelamento de uma compra recorrente. Os lançamentos já feitos
- * continuam no histórico — só param de ser gerados os dos próximos meses.
+ * Confirma a interrupção de um gasto futuro (conta recorrente ou parcelada). Os lançamentos
+ * já feitos continuam no histórico — só param de ser gerados os dos próximos meses.
  */
 export function confirmCancelRecurrence(onConfirm: () => void) {
   Alert.alert(
-    "Cancelar recorrência",
-    "Os lançamentos já feitos continuam no histórico, mas nenhum novo será lançado a partir de agora.",
+    "Interromper gasto futuro",
+    "Os descontos já feitos continuam no histórico, mas nenhum novo será lançado a partir de agora.",
     [
       { text: "Voltar", style: "cancel" },
-      { text: "Cancelar recorrência", style: "destructive", onPress: onConfirm },
+      { text: "Interromper", style: "destructive", onPress: onConfirm },
     ]
   );
 }

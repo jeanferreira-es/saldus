@@ -15,6 +15,7 @@ import LoanDetailScreen from "@/views/screens/LoanDetailScreen";
 import AddLoanScreen from "@/views/screens/AddLoanScreen";
 import SettingsScreen from "@/views/screens/SettingsScreen";
 import RecurrencesScreen from "@/views/screens/RecurrencesScreen";
+import AddRecurrenceScreen from "@/views/screens/AddRecurrenceScreen";
 import BankDepositsScreen from "@/views/screens/BankDepositsScreen";
 
 const Tab = createBottomTabNavigator();
@@ -29,6 +30,7 @@ function HomeStackNavigator() {
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="AddTransaction" component={AddTransactionScreen} options={{ presentation: "modal" }} />
       <HomeStack.Screen name="Recurrences" component={RecurrencesScreen} />
+      <HomeStack.Screen name="AddRecurrence" component={AddRecurrenceScreen} options={{ presentation: "modal" }} />
     </HomeStack.Navigator>
   );
 }

@@ -9,13 +9,14 @@ import TransactionListItem from "@/views/components/TransactionListItem";
 import { formatCurrency, formatMonthLabel } from "@/utils/format";
 import { useTransactionActions } from "@/views/hooks/useTransactionActions";
 import { FinanceCalculator } from "@/models/FinanceCalculator";
+import { RecurrenceCalculator } from "@/models/RecurrenceCalculator";
 import * as S from "./styles";
 
 const HIDDEN_MASK = "••••••";
 
 export default function HomeScreen() {
   const theme = useTheme();
-  const { transactions, balance, commitment } = useFinanceController();
+  const { transactions, recurrences, balance, commitment } = useFinanceController();
   const navigation = useNavigation<any>();
   const [hideBalance, setHideBalance] = useState(false);
 
@@ -24,6 +25,7 @@ export default function HomeScreen() {
   const monthIncome = FinanceCalculator.sumByKind(monthTx, "income");
   const monthExpense = FinanceCalculator.sumByKind(monthTx, "expense");
   const recent = transactions.slice(0, 5);
+  const thisMonth = RecurrenceCalculator.remainingThisMonth(recurrences, now);
 
   const handlePress = useTransactionActions();
 
@@ -68,12 +70,15 @@ export default function HomeScreen() {
         <AnimatedPressable onPress={() => navigation.navigate("Recurrences")}>
           <Card style={{ marginBottom: 24 }}>
             <S.CommitmentRow>
-              <Ionicons name="alert-circle-outline" size={20} color={theme.warning} />
-              <S.CommitmentTitle>Comprometido no próximo mês</S.CommitmentTitle>
+              <Ionicons name="calendar-outline" size={20} color={theme.warning} />
+              <S.CommitmentTitle>Gastos futuros · próximo mês</S.CommitmentTitle>
               <Ionicons name="chevron-forward" size={18} color={theme.textSecondary} />
             </S.CommitmentRow>
             <S.CommitmentValue>{hideBalance ? HIDDEN_MASK : formatCurrency(commitment)}</S.CommitmentValue>
-            <S.CommitmentHint>Assinaturas e parcelas em aberto · toque para gerenciar</S.CommitmentHint>
+            <S.CommitmentHint>
+              {thisMonth > 0 && !hideBalance ? `Ainda este mês: ${formatCurrency(thisMonth)} · ` : ""}
+              Contas e parcelas · toque para gerenciar
+            </S.CommitmentHint>
           </Card>
         </AnimatedPressable>
 

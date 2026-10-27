@@ -5,17 +5,12 @@ import { useFinanceController } from "@/controllers/FinanceController";
 import SegmentedControl from "@/views/components/SegmentedControl";
 import AnimatedPressable from "@/views/components/AnimatedPressable";
 import FadeSlideIn from "@/views/components/FadeSlideIn";
-import {
-  TransactionKind,
-  RecurrenceType,
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
-} from "@/models/types";
+import { TransactionKind, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/models/types";
 import { digitsToMoneyMask, moneyMaskToNumber, numberToMoneyMask } from "@/utils/format";
 import * as S from "./styles";
 
 export default function AddTransactionScreen() {
-  const { transactions, addTransaction, updateTransaction, addRecurrence } = useFinanceController();
+  const { transactions, addTransaction, updateTransaction } = useFinanceController();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
@@ -28,16 +23,17 @@ export default function AddTransactionScreen() {
   const [category, setCategory] = useState<string>(
     editing?.category ?? (kind === "income" ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0])
   );
-  const [recurrence, setRecurrence] = useState<RecurrenceType>(editing?.recurrence ?? "none");
-  const [installmentTotal, setInstallmentTotal] = useState(String(editing?.installments?.total ?? 2));
-  const [installmentCurrent, setInstallmentCurrent] = useState(String(editing?.installments?.current ?? 1));
-
   const categories = kind === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   const handleKindChange = (newKind: TransactionKind) => {
     setKind(newKind);
     setCategory(newKind === "income" ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]);
-    if (newKind === "income") setRecurrence("none");
+  };
+
+  // Recorrentes e parceladas ficam centralizadas em Gastos futuros (pilha da aba Início).
+  const openFutureExpense = () => {
+    navigation.goBack();
+    navigation.navigate("Início", { screen: "AddRecurrence" });
   };
 
   const handleSave = async () => {
@@ -45,17 +41,6 @@ export default function AddTransactionScreen() {
     if (!parsedAmount || parsedAmount <= 0) {
       Alert.alert("Valor inválido", "Informe um valor maior que zero.");
       return;
-    }
-
-    let installments;
-    if (recurrence === "installment") {
-      const total = parseInt(installmentTotal, 10);
-      const current = parseInt(installmentCurrent, 10);
-      if (!total || total < 2 || !current || current < 1 || current > total) {
-        Alert.alert("Parcelas inválidas", "Confira o número total de parcelas e a parcela atual.");
-        return;
-      }
-      installments = { total, current };
     }
 
     if (editing) {
@@ -70,17 +55,6 @@ export default function AddTransactionScreen() {
         installments: editing.installments,
         recurrenceId: editing.recurrenceId,
       });
-    } else if (recurrence !== "none") {
-      // Vira uma regra: este mês é lançado agora e os próximos, automaticamente.
-      await addRecurrence({
-        kind,
-        type: recurrence,
-        amount: parsedAmount,
-        category,
-        description,
-        startDate: new Date().toISOString(),
-        installments: installments && { start: installments.current, total: installments.total },
-      });
     } else {
       await addTransaction({
         kind,
@@ -88,7 +62,7 @@ export default function AddTransactionScreen() {
         category,
         description,
         date: new Date().toISOString(),
-        recurrence,
+        recurrence: "none",
       });
     }
 
@@ -148,52 +122,18 @@ export default function AddTransactionScreen() {
             <S.Hint>
               {editing.recurrence === "installment"
                 ? `Parcela ${editing.installments?.current}/${editing.installments?.total} de uma compra parcelada.`
-                : "Lançamento de uma compra recorrente."}{" "}
-              As alterações valem só para este mês.
+                : "Lançamento de uma conta recorrente."}{" "}
+              As alterações valem só para este mês. Para mudar os próximos, edite em Gastos futuros.
             </S.Hint>
           )}
 
           {kind === "expense" && !editing && (
-            <>
-              <S.Label>Tipo de compra</S.Label>
-              <SegmentedControl
-                value={recurrence}
-                onChange={setRecurrence}
-                options={[
-                  { label: "À vista", value: "none" },
-                  { label: "Recorrente", value: "recurring" },
-                  { label: "Parcelada", value: "installment" },
-                ]}
-              />
+            <AnimatedPressable onPress={openFutureExpense}>
               <S.Hint>
-                {recurrence === "none" && "Pago agora, não afeta os próximos meses."}
-                {recurrence === "recurring" &&
-                  "Lançada automaticamente todo mês (assinatura, aluguel, etc.) até você cancelar. Entra no valor comprometido do próximo mês."}
-                {recurrence === "installment" &&
-                  "Informe o valor de UMA parcela e qual parcela é a deste mês. As próximas são lançadas automaticamente."}
+                Sai do saldo agora. Conta recorrente ou compra parcelada no crédito?{" "}
+                <S.HintLink>Cadastre em Gastos futuros</S.HintLink> — elas só descontam no dia certo.
               </S.Hint>
-
-              {recurrence === "installment" && (
-                <S.InstallmentRow>
-                  <S.InstallmentField>
-                    <S.Label>Parcela atual</S.Label>
-                    <S.Input
-                      value={installmentCurrent}
-                      onChangeText={setInstallmentCurrent}
-                      keyboardType="number-pad"
-                    />
-                  </S.InstallmentField>
-                  <S.InstallmentField>
-                    <S.Label>Total de parcelas</S.Label>
-                    <S.Input
-                      value={installmentTotal}
-                      onChangeText={setInstallmentTotal}
-                      keyboardType="number-pad"
-                    />
-                  </S.InstallmentField>
-                </S.InstallmentRow>
-              )}
-            </>
+            </AnimatedPressable>
           )}
 
           <AnimatedPressable onPress={handleSave}>

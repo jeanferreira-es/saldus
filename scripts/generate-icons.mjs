@@ -34,13 +34,13 @@ const svg = (body) =>
 const iconSvg = svg(`${background}
   <rect width="1024" height="1024" fill="url(#bg)"/>
   <rect width="1024" height="1024" fill="url(#glow)"/>
-  ${scaled(1.14)}`);
+  ${scaled(1)}`);
 
 // Ícone com cantos arredondados (splash e favicon)
 const roundedSvg = svg(`${background}
   <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
   <rect width="1024" height="1024" rx="232" fill="url(#glow)"/>
-  ${scaled(1.14)}`);
+  ${scaled(1)}`);
 
 // Android adaptive: primeiro plano dentro da área segura (~66% central)
 const adaptiveFgSvg = svg(scaled(0.82));

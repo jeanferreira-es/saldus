@@ -74,6 +74,11 @@ export const Hint = styled.Text`
   color: ${({ theme }) => theme.textSecondary};
 `;
 
+export const HintLink = styled.Text`
+  font-family: ${fonts.semiBold};
+  color: ${({ theme }) => theme.primary};
+`;
+
 export const InstallmentRow = styled.View`
   flex-direction: row;
   gap: 12px;

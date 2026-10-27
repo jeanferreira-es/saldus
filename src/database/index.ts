@@ -60,7 +60,11 @@ export function generateId(): string {
  * Migrações versionadas via `PRAGMA user_version`: cada função roda uma única vez,
  * em ordem, dentro de uma transação. Para evoluir o schema, adicione ao final.
  */
-const MIGRATIONS: ((db: SQLite.SQLiteDatabase) => Promise<void>)[] = [migrateToRecurrences, createBankDeposits];
+const MIGRATIONS: ((db: SQLite.SQLiteDatabase) => Promise<void>)[] = [
+  migrateToRecurrences,
+  createBankDeposits,
+  addRecurrenceSchedule,
+];
 
 async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
   const row = await db.getFirstAsync<{ user_version: number }>("PRAGMA user_version");
@@ -167,6 +171,17 @@ async function migrateToRecurrences(db: SQLite.SQLiteDatabase): Promise<void> {
     for (const row of rows) {
       await db.runAsync("UPDATE transactions SET recurrence_id = ? WHERE id = ?", [id, row.id]);
     }
+  }
+}
+
+/** v3: gastos futuros com dia fixo de desconto e duração opcional para contas recorrentes. */
+async function addRecurrenceSchedule(db: SQLite.SQLiteDatabase): Promise<void> {
+  const columns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(recurrences)");
+  if (!columns.some((c) => c.name === "due_day")) {
+    await db.execAsync("ALTER TABLE recurrences ADD COLUMN due_day INTEGER");
+  }
+  if (!columns.some((c) => c.name === "max_occurrences")) {
+    await db.execAsync("ALTER TABLE recurrences ADD COLUMN max_occurrences INTEGER");
   }
 }
 

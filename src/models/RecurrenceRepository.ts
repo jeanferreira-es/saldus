@@ -19,7 +19,12 @@ type RecurrenceRow = {
   installments_total: number | null;
   generated_count: number;
   canceled_at: string | null;
+  due_day: number | null;
+  max_occurrences: number | null;
 };
+
+/** Campos que o usuário define ao cadastrar/editar um gasto futuro. */
+export type RecurrenceInput = Omit<Recurrence, "id" | "generatedCount" | "canceledAt">;
 
 function rowToRecurrence(row: RecurrenceRow): Recurrence {
   return {
@@ -30,6 +35,8 @@ function rowToRecurrence(row: RecurrenceRow): Recurrence {
     category: row.category,
     description: row.description,
     startDate: row.start_date,
+    dueDay: row.due_day ?? undefined,
+    maxOccurrences: row.max_occurrences ?? undefined,
     installments:
       row.installments_start != null && row.installments_total != null
         ? { start: row.installments_start, total: row.installments_total }
@@ -46,14 +53,17 @@ export class RecurrenceRepository {
     return rows.map(rowToRecurrence);
   }
 
-  /** Cria a regra e já gera o lançamento da primeira ocorrência (startDate). */
-  static async add(data: Omit<Recurrence, "id" | "generatedCount" | "canceledAt">): Promise<void> {
+  /**
+   * Cria a regra. Cada ocorrência só vira lançamento quando chega o dia do desconto
+   * (com startDate no futuro, o saldo não muda agora).
+   */
+  static async add(data: RecurrenceInput): Promise<void> {
     const db = await getDatabase();
     await db.runAsync(
       `INSERT INTO recurrences
         (id, kind, type, amount, category, description, start_date,
-         installments_start, installments_total, generated_count, canceled_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)`,
+         installments_start, installments_total, generated_count, canceled_at, due_day, max_occurrences)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?)`,
       [
         generateId(),
         data.kind,
@@ -64,6 +74,36 @@ export class RecurrenceRepository {
         data.startDate,
         data.installments?.start ?? null,
         data.installments?.total ?? null,
+        data.dueDay ?? null,
+        data.maxOccurrences ?? null,
+      ]
+    );
+    await this.generateDue(new Date());
+  }
+
+  /**
+   * Edita a regra. Vale para os próximos descontos: os lançamentos já gerados
+   * continuam como estão. O tipo e o mês inicial não mudam.
+   */
+  static async update(
+    id: string,
+    data: Pick<RecurrenceInput, "amount" | "category" | "description" | "dueDay" | "maxOccurrences" | "installments">
+  ): Promise<void> {
+    const db = await getDatabase();
+    await db.runAsync(
+      `UPDATE recurrences
+         SET amount = ?, category = ?, description = ?, due_day = ?, max_occurrences = ?,
+             installments_start = ?, installments_total = ?
+       WHERE id = ?`,
+      [
+        data.amount,
+        data.category,
+        data.description,
+        data.dueDay ?? null,
+        data.maxOccurrences ?? null,
+        data.installments?.start ?? null,
+        data.installments?.total ?? null,
+        id,
       ]
     );
     await this.generateDue(new Date());
@@ -78,8 +118,8 @@ export class RecurrenceRepository {
     ]);
   }
 
-  /** Remove a regra se ela não tiver mais nenhum lançamento (ex: o único foi excluído). */
-  static async removeIfEmpty(id: string): Promise<void> {
+  /** Exclui a regra, desde que ela não tenha lançamentos (senão, use `cancel`). */
+  static async remove(id: string): Promise<void> {
     const db = await getDatabase();
     await db.runAsync(
       "DELETE FROM recurrences WHERE id = ? AND NOT EXISTS (SELECT 1 FROM transactions WHERE recurrence_id = ?)",

@@ -8,12 +8,14 @@ App de controle financeiro pessoal em **React Native + Expo (TypeScript)**, com
 
 - **Saldo**: acompanhe o saldo atual e adicione entradas de dinheiro.
 - **Saídas por categoria**: registre despesas (Alimentação, Moradia, Transporte...).
-- **À vista, recorrente ou parcelada**: compras recorrentes e parceladas são cadastradas
-  uma vez e o app **lança automaticamente** a ocorrência de cada mês. Isso alimenta o
-  cálculo de **quanto já está comprometido no próximo mês** (recorrentes ativas +
-  parcelas que ainda caem no mês seguinte).
-- **Cancelar recorrência**: pelo menu do lançamento ou tocando no card "Comprometido"
-  na tela inicial. Os lançamentos já feitos continuam no histórico.
+- **Gastos futuros**: contas recorrentes e compras parceladas no crédito ficam numa
+  tela só (card "Gastos futuros" na tela inicial). Cadastrar não mexe no saldo: cada
+  conta/parcela é **lançada automaticamente no dia do desconto** escolhido ("todo dia 10").
+  Contas podem durar até serem interrompidas ou por um número de meses; tudo pode ser
+  editado (vale para os próximos descontos), interrompido ou excluído (se nada foi lançado).
+  Mostra quanto ainda sai **este mês** e quanto já está comprometido no **próximo**.
+- **Saídas à vista**: o formulário de saída lança na hora; recorrentes e parceladas são
+  cadastradas em Gastos futuros.
 - **Empréstimos**: o que você **emprestou** (a receber) e o que **pegou emprestado**
   (a pagar), com pessoa, valor, vencimento e status de quitação.
 - **Tema claro / escuro / automático**, em tons de laranja.
