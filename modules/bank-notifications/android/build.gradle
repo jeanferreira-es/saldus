@@ -3,7 +3,7 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 
-group = 'com.jean.meudinheiro'
+group = 'com.jean.saldus'
 version = '1.0.0'
 
 android {

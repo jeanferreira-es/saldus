@@ -5,7 +5,7 @@ let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (!dbPromise) {
-    dbPromise = SQLite.openDatabaseAsync("mymoney.db");
+    dbPromise = SQLite.openDatabaseAsync("saldus.db");
   }
   return dbPromise;
 }

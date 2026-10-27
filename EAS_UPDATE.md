@@ -60,7 +60,7 @@ de cada update.
 | Arquivo | Configuração |
 |---|---|
 | `package.json` | dependência `expo-updates` |
-| `app.json` | `updates.url` apontando para o projeto no EAS e `runtimeVersion: { "policy": "fingerprint" }` |
+| `app.json` | `runtimeVersion: { "policy": "fingerprint" }`. O `updates.url` é criado pelo `update:configure` depois de vincular o projeto a uma conta (`eas init`) |
 | `eas.json` | um channel por perfil de build (tabela abaixo) |
 
 | Perfil de build (`eas.json`) | Gera | Channel |

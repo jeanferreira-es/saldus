@@ -4,6 +4,7 @@ import { fonts } from "@/views/theme/fonts";
 
 export const Container = styled(SafeAreaView)`
   flex: 1;
+  height: 100%;
   padding: 20px;
   background-color: ${({ theme }) => theme.background};
 `;
@@ -53,9 +54,12 @@ export const Counter = styled.Text`
 `;
 
 export const Footer = styled.Text`
+  flex: 1;
   font-size: 12px;
   font-family: ${fonts.regular};
   text-align: center;
+  justify-content: flex-end;
+  line-height: 18px;
   margin-top: 32px;
   color: ${({ theme }) => theme.textSecondary};
 `;

@@ -4,7 +4,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeMode } from "./types";
 
-const STORAGE_KEY = "@meudinheiro:theme_mode";
+const STORAGE_KEY = "@saldus:theme_mode";
 
 export class ThemeRepository {
   static async get(): Promise<ThemeMode | null> {

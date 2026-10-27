@@ -1,5 +1,6 @@
 import React from "react";
-import { Platform } from "react-native";
+import { Linking, Platform } from "react-native";
+import Constants from "expo-constants";
 import { useTheme } from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +16,10 @@ const OPTIONS: { mode: ThemeMode; label: string; icon: keyof typeof Ionicons.gly
   { mode: "dark", label: "Escuro", icon: "moon-outline" },
   { mode: "system", label: "Automático (sistema)", icon: "phone-portrait-outline" },
 ];
+
+const APP_VERSION = Constants.expoConfig?.version ?? "";
+// Publicado pelo GitHub Pages a partir de docs/privacy/index.html
+const PRIVACY_POLICY_URL = "https://jeanferreira-es.github.io/saldus/privacy/";
 
 export default function SettingsScreen() {
   const theme = useTheme();
@@ -58,7 +63,21 @@ export default function SettingsScreen() {
         </>
       )}
 
-      <S.Footer>Meu Dinheiro · seus dados ficam salvos apenas neste aparelho</S.Footer>
+      <S.SectionLabel style={{ marginTop: 24 }}>Sobre</S.SectionLabel>
+      <Card style={{ padding: 0, overflow: "hidden" }}>
+        <AnimatedPressable onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+          <S.Row divider={false}>
+            <Ionicons name="shield-checkmark-outline" size={20} color={theme.primary} />
+            <S.RowLabel>Política de privacidade</S.RowLabel>
+            <Ionicons name="open-outline" size={18} color={theme.textSecondary} />
+          </S.Row>
+        </AnimatedPressable>
+      </Card>
+
+      <S.Footer>
+        Saldus v{APP_VERSION} · seus dados ficam salvos apenas neste aparelho
+        {"\n"}© {new Date().getFullYear()} Fedaykim. Todos os direitos reservados.
+      </S.Footer>
     </S.Container>
   );
 }

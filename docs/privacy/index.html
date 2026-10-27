@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saldus · Política de Privacidade</title>
+  <meta name="description" content="Política de Privacidade do aplicativo Saldus, controle financeiro pessoal.">
+  <style>
+    :root {
+      --bg: #F5F6FB;
+      --surface: #FFFFFF;
+      --text: #1A1C2B;
+      --muted: #5B6076;
+      --border: #E2E5F0;
+      --accent: #0068E1;
+      --accent-soft: #E6F0FC;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0E0F1A;
+        --surface: #171928;
+        --text: #ECEEF7;
+        --muted: #A3A8BF;
+        --border: #262A3D;
+        --accent: #5AA2F2;
+        --accent-soft: #16243B;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+    header { margin-bottom: 32px; }
+    .brand { color: var(--accent); font-weight: 700; letter-spacing: 0.02em; }
+    h1 { font-size: 2rem; line-height: 1.2; margin: 4px 0 8px; }
+    h2 { font-size: 1.2rem; margin: 40px 0 8px; }
+    h3 { font-size: 1rem; margin: 24px 0 4px; }
+    p, li { color: var(--text); }
+    .meta { color: var(--muted); font-size: 0.9rem; margin: 0; }
+    .summary {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+    .summary ul { margin: 8px 0 0; padding-left: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.95rem; }
+    th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; }
+    .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    a { color: var(--accent); }
+    footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">Saldus</div>
+    <h1>Política de Privacidade</h1>
+    <p class="meta">Vigente a partir de 27 de outubro de 2026 · Versão do app: 1.1.0</p>
+  </header>
+
+  <p>
+    Esta Política de Privacidade explica como o aplicativo <strong>Saldus</strong> ("app") trata as informações
+    de quem o utiliza. O app é desenvolvido e mantido por <strong>Fedaykim</strong> ("nós"), responsável pelo
+    tratamento dos dados nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD).
+  </p>
+
+  <div class="summary">
+    <strong>Resumo</strong>
+    <ul>
+      <li>Seus dados financeiros ficam <strong>somente no seu aparelho</strong>. Não temos servidor, conta de usuário nem acesso a eles.</li>
+      <li>Não vendemos, não compartilhamos e não usamos seus dados para publicidade. O app não tem anúncios nem ferramentas de análise (analytics).</li>
+      <li>O acesso às notificações é <strong>opcional</strong>, só existe no Android e serve apenas para registrar depósitos recebidos nos bancos que você escolher.</li>
+      <li>Você pode apagar tudo a qualquer momento limpando os dados do app ou desinstalando-o.</li>
+    </ul>
+  </div>
+
+  <h2>1. Quais dados o app usa</h2>
+
+  <h3>1.1 Dados que você mesmo registra</h3>
+  <p>Para funcionar como controle financeiro, o app guarda as informações que você digita:</p>
+  <ul>
+    <li><strong>Movimentações</strong>: entradas e saídas, com valor, categoria, descrição e data;</li>
+    <li><strong>Gastos futuros</strong>: contas recorrentes e compras parceladas, com valor, dia do desconto e duração;</li>
+    <li><strong>Empréstimos</strong>: nome da pessoa envolvida, valor, datas, vencimento e observações;</li>
+    <li><strong>Preferências</strong>: tema (claro, escuro ou automático) e configurações de depósitos automáticos.</li>
+  </ul>
+  <p>
+    Ao registrar empréstimos ou regras de depósito, você pode informar <strong>nomes de outras pessoas</strong>.
+    Esses nomes servem apenas para a sua própria organização e também ficam só no seu aparelho.
+  </p>
+
+  <h3>1.2 Notificações de bancos (opcional, apenas Android)</h3>
+  <p>
+    O recurso <em>Depósitos pelo banco</em> registra automaticamente os Pix e transferências que você recebe.
+    Ele só funciona se você ativá-lo e conceder ao app o <strong>acesso às notificações</strong> nas
+    configurações do Android. Com o acesso concedido:
+  </p>
+  <ul>
+    <li>o app considera <strong>somente</strong> notificações dos aplicativos de banco que você marcou na lista;</li>
+    <li>dessas, só são mantidas as que mencionam valores em reais ("R$"). Todas as outras notificações, de qualquer app, são descartadas na hora, sem serem gravadas;</li>
+    <li>de cada notificação mantida, o app guarda o banco, o título, o texto, a data, o <strong>valor</strong> e o <strong>nome de quem enviou</strong>, para que você possa revisar o depósito;</li>
+    <li>números de documentos que apareçam mascarados no texto (como CPF parcial) são ignorados na identificação de quem enviou;</li>
+    <li>o app não responde, não apaga e não interage com as notificações.</li>
+  </ul>
+  <p>
+    Você pode desativar o acesso a qualquer momento em <em>Configurações do Android › Notificações ›
+    Acesso a notificações</em>. Com o acesso desativado, nada é capturado.
+  </p>
+
+  <h3>1.3 O que o app não acessa</h3>
+  <p>
+    O app <strong>não</strong> acessa localização, contatos, câmera, microfone, fotos, arquivos, SMS, registro de
+    chamadas, identificadores de publicidade nem as suas contas bancárias. Ele não faz login no seu banco e não
+    movimenta dinheiro.
+  </p>
+
+  <h2>2. Para que os dados são usados</h2>
+  <p>Os dados são usados exclusivamente para as funções do app:</p>
+  <ul>
+    <li>calcular e mostrar seu saldo, entradas, saídas e totais do mês;</li>
+    <li>lançar automaticamente contas recorrentes e parcelas no dia escolhido;</li>
+    <li>acompanhar valores emprestados e a pagar;</li>
+    <li>transformar depósitos recebidos em lançamentos, conforme as regras que você definiu.</li>
+  </ul>
+  <p>
+    A base legal é a execução do serviço que você solicitou ao usar o app e, para o acesso às notificações, o seu
+    consentimento, que pode ser retirado a qualquer momento.
+  </p>
+
+  <h2>3. Onde os dados ficam e compartilhamento</h2>
+  <p>
+    Todos os dados são gravados <strong>localmente</strong>, no armazenamento privado do app no seu aparelho
+    (banco de dados SQLite e armazenamento interno). Outros apps não têm acesso a esse espaço.
+    <strong>Nós não recebemos, não coletamos e não compartilhamos</strong> esses dados com terceiros.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Dado</th><th>Onde fica</th><th>Enviado para fora?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Movimentações, gastos futuros e empréstimos</td><td>Seu aparelho</td><td>Não</td></tr>
+        <tr><td>Notificações de bancos selecionados</td><td>Seu aparelho</td><td>Não</td></tr>
+        <tr><td>Preferências do app</td><td>Seu aparelho</td><td>Não</td></tr>
+        <tr><td>Informações técnicas para atualizações (ver item 4)</td><td>—</td><td>Sim, ao serviço de atualização</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4. Serviços de terceiros</h2>
+
+  <h3>4.1 Atualizações do app (Expo / EAS Update)</h3>
+  <p>
+    O app pode buscar atualizações de código nos servidores do <a href="https://expo.dev/privacy">Expo</a>
+    (650 Industries, Inc.). Nessa consulta são enviadas apenas informações técnicas necessárias para entregar a
+    atualização correta, como sistema operacional, versão do app e endereço IP da conexão.
+    <strong>Nenhum dado financeiro ou de notificação é enviado.</strong>
+  </p>
+
+  <h3>4.2 Backup do Android (Google)</h3>
+  <p>
+    Se o backup automático estiver ativado no seu aparelho, o próprio Android pode incluir os dados do app no
+    backup da sua conta Google, de forma criptografada. Esse backup é controlado por você nas configurações do
+    Android e segue a <a href="https://policies.google.com/privacy">Política de Privacidade do Google</a>.
+    Nós não temos acesso a ele.
+  </p>
+
+  <h2>5. Segurança</h2>
+  <p>
+    Os dados ficam no armazenamento privado do app, protegido pelo sistema operacional. Como nada é enviado aos
+    nossos servidores, não há transmissão dos seus dados financeiros pela internet. Recomendamos manter o
+    bloqueio de tela do aparelho ativo, já que qualquer pessoa com acesso ao aparelho desbloqueado pode abrir o app.
+  </p>
+
+  <h2>6. Retenção e exclusão</h2>
+  <p>Os dados ficam guardados enquanto o app estiver instalado ou até você apagá-los. Você pode:</p>
+  <ul>
+    <li>excluir lançamentos, gastos futuros, empréstimos, regras e depósitos individualmente dentro do app;</li>
+    <li>apagar todos os dados em <em>Configurações do Android › Apps › Saldus › Armazenamento › Limpar dados</em>;</li>
+    <li>desinstalar o app, o que remove todos os dados do aparelho.</li>
+  </ul>
+  <p>
+    Como não guardamos cópias dos seus dados, não conseguimos recuperá-los depois de apagados, nem precisamos de
+    nenhuma solicitação para excluí-los.
+  </p>
+
+  <h2>7. Seus direitos</h2>
+  <p>
+    A LGPD garante direitos como confirmação, acesso, correção, eliminação e revogação do consentimento. Como os
+    dados ficam apenas com você, esses direitos podem ser exercidos diretamente no app e nas configurações do
+    aparelho. Para dúvidas, fale conosco pelo contato abaixo.
+  </p>
+
+  <h2>8. Crianças</h2>
+  <p>
+    O app não é direcionado a crianças menores de 13 anos e não coleta intencionalmente dados de crianças.
+  </p>
+
+  <h2>9. Alterações nesta política</h2>
+  <p>
+    Esta política pode ser atualizada quando o app ganhar novos recursos. A versão vigente sempre estará nesta
+    página, com a data de início no topo. Mudanças relevantes, especialmente sobre o uso de dados, também serão
+    informadas no próprio app.
+  </p>
+
+  <h2>10. Contato</h2>
+  <p>
+    Responsável: <strong>Fedaykim</strong><br>
+    <!-- TODO: trocar pelo e-mail de contato público antes de publicar -->
+    E-mail: <a href="mailto:fedaykim@gmail.com">fedaykim@gmail.com</a>
+  </p>
+
+  <footer>© 2026 Fedaykim. Todos os direitos reservados.</footer>
+</main>
+</body>
+</html>

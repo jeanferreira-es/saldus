@@ -5,7 +5,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BankDepositSettings } from "./types";
 
-const STORAGE_KEY = "@meudinheiro:bank_deposit_settings";
+const STORAGE_KEY = "@saldus:bank_deposit_settings";
 
 export const DEFAULT_BANK_DEPOSIT_SETTINGS: BankDepositSettings = {
   enabledBanks: [],

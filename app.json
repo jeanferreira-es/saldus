@@ -1,21 +1,24 @@
 {
   "expo": {
-    "name": "Meu Dinheiro",
-    "slug": "meu-dinheiro",
-    "version": "1.0.0",
+    "name": "Saldus",
+    "slug": "saldus",
+    "version": "1.1.0",
     "runtimeVersion": {
       "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b1f63915-4483-4123-9535-2002dcd600f9"
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "scheme": "meudinheiro",
+    "scheme": "saldus",
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jean.meudinheiro"
+      "bundleIdentifier": "com.jean.saldus"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +26,7 @@
         "backgroundImage": "./assets/adaptive-icon-background.png",
         "backgroundColor": "#0068E1"
       },
-      "package": "com.jean.meudinheiro"
+      "package": "com.jean.saldus"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -49,9 +52,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "ecaa60c9-a995-4602-9b33-f2cddce3dca8"
+        "projectId": "b1f63915-4483-4123-9535-2002dcd600f9"
       }
     },
-    "owner": "ferracy"
+    "owner": "fedaykim"
   }
 }
