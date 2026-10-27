@@ -15,11 +15,11 @@ const mark = markSvg.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "
 const background = `
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6B7EFF"/>
-      <stop offset="1" stop-color="#3A4FD1"/>
+      <stop offset="0" stop-color="#1F7EE9"/>
+      <stop offset="1" stop-color="#0068E1"/>
     </linearGradient>
     <radialGradient id="glow" cx="0.3" cy="0.2" r="0.8">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
   </defs>`;
@@ -34,16 +34,17 @@ const svg = (body) =>
 const iconSvg = svg(`${background}
   <rect width="1024" height="1024" fill="url(#bg)"/>
   <rect width="1024" height="1024" fill="url(#glow)"/>
-  ${scaled(1)}`);
+  ${scaled(0.86)}`);
 
 // Ícone com cantos arredondados (splash e favicon)
 const roundedSvg = svg(`${background}
   <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
   <rect width="1024" height="1024" rx="232" fill="url(#glow)"/>
-  ${scaled(1)}`);
+  ${scaled(0.86)}`);
 
-// Android adaptive: primeiro plano dentro da área segura (~66% central)
-const adaptiveFgSvg = svg(scaled(0.82));
+// Android adaptive: o launcher mostra só os ~66% centrais (72 de 108dp) e ainda recorta
+// em círculo/squircle. O desenho ocupa ~45dp, deixando respiro dentro dessa área.
+const adaptiveFgSvg = svg(scaled(0.66));
 const adaptiveBgSvg = svg(`${background}
   <rect width="1024" height="1024" fill="url(#bg)"/>
   <rect width="1024" height="1024" fill="url(#glow)"/>`);

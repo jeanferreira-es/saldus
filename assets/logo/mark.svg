@@ -1,12 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <!-- Degraus: barras descendo (o saldo sendo descontado aos poucos) e o próximo desconto marcado.
+  <!-- Degraus: barras descendo (o saldo sendo descontado aos poucos) e a moeda do próximo desconto.
        Desenhado numa grade de 512 e centralizado no quadro de 1024. -->
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0F8FF"/>
+      <stop offset="1" stop-color="#D8E6F7"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3792EE"/>
+      <stop offset="1" stop-color="#1F7EE9"/>
+    </linearGradient>
+  </defs>
   <g transform="translate(-16 -43) scale(2)">
-    <rect x="100" y="152" width="64" height="240" rx="20" fill="#FFFFFF"/>
-    <rect x="188" y="212" width="64" height="180" rx="20" fill="#FFFFFF" fill-opacity="0.72"/>
-    <rect x="276" y="264" width="64" height="128" rx="20" fill="#FFFFFF" fill-opacity="0.48"/>
-    <rect x="364" y="308" width="64" height="84" rx="20" fill="#FFFFFF" fill-opacity="0.28"/>
-    <circle cx="396" cy="208" r="42" fill="none" stroke="#FDE68A" stroke-opacity="0.9" stroke-width="6"/>
-    <circle cx="396" cy="208" r="22" fill="#FBBF24"/>
+    <rect x="100" y="152" width="64" height="240" rx="20" fill="url(#bar)"/>
+    <rect x="188" y="212" width="64" height="180" rx="20" fill="url(#bar)" fill-opacity="0.75"/>
+    <rect x="276" y="264" width="64" height="128" rx="20" fill="url(#bar)" fill-opacity="0.5"/>
+    <rect x="364" y="308" width="64" height="84" rx="20" fill="url(#bar)" fill-opacity="0.3"/>
+    <circle cx="396" cy="208" r="42" fill="url(#bar)"/>
+    <circle cx="396" cy="208" r="42" fill="none" stroke="#BCD7F6" stroke-width="3"/>
+    <circle cx="396" cy="208" r="24" fill="url(#coin)"/>
   </g>
 </svg>

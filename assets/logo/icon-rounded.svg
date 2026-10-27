@@ -1,26 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6B7EFF"/>
-      <stop offset="1" stop-color="#3A4FD1"/>
+      <stop offset="0" stop-color="#1F7EE9"/>
+      <stop offset="1" stop-color="#0068E1"/>
     </linearGradient>
     <radialGradient id="glow" cx="0.3" cy="0.2" r="0.8">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
   <rect width="1024" height="1024" rx="232" fill="url(#glow)"/>
-  <g transform="translate(512 512) scale(1) translate(-512 -512)">
-  <!-- Degraus: barras descendo (o saldo sendo descontado aos poucos) e o próximo desconto marcado.
+  <g transform="translate(512 512) scale(0.86) translate(-512 -512)">
+  <!-- Degraus: barras descendo (o saldo sendo descontado aos poucos) e a moeda do próximo desconto.
        Desenhado numa grade de 512 e centralizado no quadro de 1024. -->
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0F8FF"/>
+      <stop offset="1" stop-color="#D8E6F7"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3792EE"/>
+      <stop offset="1" stop-color="#1F7EE9"/>
+    </linearGradient>
+  </defs>
   <g transform="translate(-16 -43) scale(2)">
-    <rect x="100" y="152" width="64" height="240" rx="20" fill="#FFFFFF"/>
-    <rect x="188" y="212" width="64" height="180" rx="20" fill="#FFFFFF" fill-opacity="0.72"/>
-    <rect x="276" y="264" width="64" height="128" rx="20" fill="#FFFFFF" fill-opacity="0.48"/>
-    <rect x="364" y="308" width="64" height="84" rx="20" fill="#FFFFFF" fill-opacity="0.28"/>
-    <circle cx="396" cy="208" r="42" fill="none" stroke="#FDE68A" stroke-opacity="0.9" stroke-width="6"/>
-    <circle cx="396" cy="208" r="22" fill="#FBBF24"/>
+    <rect x="100" y="152" width="64" height="240" rx="20" fill="url(#bar)"/>
+    <rect x="188" y="212" width="64" height="180" rx="20" fill="url(#bar)" fill-opacity="0.75"/>
+    <rect x="276" y="264" width="64" height="128" rx="20" fill="url(#bar)" fill-opacity="0.5"/>
+    <rect x="364" y="308" width="64" height="84" rx="20" fill="url(#bar)" fill-opacity="0.3"/>
+    <circle cx="396" cy="208" r="42" fill="url(#bar)"/>
+    <circle cx="396" cy="208" r="42" fill="none" stroke="#BCD7F6" stroke-width="3"/>
+    <circle cx="396" cy="208" r="24" fill="url(#coin)"/>
   </g>
 </g>
 </svg>
