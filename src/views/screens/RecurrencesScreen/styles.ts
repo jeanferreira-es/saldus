@@ -147,6 +147,22 @@ export const Amount = styled.Text<{ muted?: boolean }>`
   color: ${({ muted, theme }) => (muted ? theme.textSecondary : theme.expense)};
 `;
 
+export const PayBtn = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  padding-vertical: 4px;
+  padding-horizontal: 10px;
+  border-radius: 12px;
+  background-color: ${({ theme }) => `${theme.primary}22`};
+`;
+
+export const PayBtnText = styled.Text`
+  font-size: 12px;
+  font-family: ${fonts.bold};
+  color: ${({ theme }) => theme.primary};
+`;
+
 export const EmptyText = styled.Text`
   color: ${({ theme }) => theme.textSecondary};
   font-family: ${fonts.regular};

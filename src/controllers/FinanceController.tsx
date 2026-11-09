@@ -30,6 +30,7 @@ interface FinanceControllerValue {
   addRecurrence: (data: RecurrenceInput) => Promise<void>;
   updateRecurrence: (id: string, data: Parameters<typeof RecurrenceRepository.update>[1]) => Promise<void>;
   cancelRecurrence: (id: string) => Promise<void>;
+  payRecurrenceEarly: (id: string) => Promise<void>;
   removeRecurrence: (id: string) => Promise<void>;
   addLoan: (data: Omit<Loan, "id">) => Promise<void>;
   updateLoan: (id: string, data: Omit<Loan, "id">) => Promise<void>;
@@ -98,6 +99,12 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
     await reloadTransactionsAndRecurrences();
   };
 
+  // Lança agora a próxima conta/parcela; no dia do desconto ela não é lançada de novo.
+  const payRecurrenceEarly = async (id: string) => {
+    await RecurrenceRepository.payNext(id, new Date());
+    await reloadTransactionsAndRecurrences();
+  };
+
   const removeRecurrence = async (id: string) => {
     await RecurrenceRepository.remove(id);
     await reloadTransactionsAndRecurrences();
@@ -140,6 +147,7 @@ export function FinanceControllerProvider({ children }: { children: React.ReactN
     addRecurrence,
     updateRecurrence,
     cancelRecurrence,
+    payRecurrenceEarly,
     removeRecurrence,
     addLoan,
     updateLoan,

@@ -34,7 +34,7 @@ function describe(recurrence: Recurrence): string {
 
 export default function RecurrencesScreen() {
   const theme = useTheme();
-  const { recurrences, commitment, cancelRecurrence, removeRecurrence } = useFinanceController();
+  const { recurrences, commitment, cancelRecurrence, removeRecurrence, payRecurrenceEarly } = useFinanceController();
   const navigation = useNavigation<any>();
 
   const now = new Date();
@@ -50,6 +50,24 @@ export default function RecurrencesScreen() {
       { text: "Voltar", style: "cancel" },
       { text: "Excluir", style: "destructive", onPress: () => removeRecurrence(recurrence.id) },
     ]);
+
+  const confirmPayEarly = (recurrence: Recurrence) => {
+    const next = RecurrenceCalculator.nextDueDate(recurrence);
+    if (!next) return;
+    const what = recurrence.installments
+      ? `a parcela ${RecurrenceCalculator.installmentNumber(recurrence, recurrence.generatedCount)} de ${recurrence.installments.total}`
+      : "esta conta";
+    Alert.alert(
+      "Marcar como paga",
+      `Desconta ${formatCurrency(recurrence.amount)} do saldo hoje e marca ${what} (vencimento ${formatDate(
+        next.toISOString()
+      )}) como paga. No dia ${formatDate(next.toISOString())} ela não será descontada de novo.`,
+      [
+        { text: "Voltar", style: "cancel" },
+        { text: "Marcar como paga", onPress: () => payRecurrenceEarly(recurrence.id) },
+      ]
+    );
+  };
 
   const showActions = (recurrence: Recurrence) => {
     const title = recurrence.description || recurrence.category;
@@ -89,7 +107,14 @@ export default function RecurrencesScreen() {
             </S.Info>
             <S.Right>
               <S.Amount muted={!isActive}>{formatCurrency(recurrence.amount)}</S.Amount>
-              {isActive && <Ionicons name="ellipsis-horizontal" size={16} color={theme.textSecondary} />}
+              {isActive && (
+                <AnimatedPressable onPress={() => confirmPayEarly(recurrence)}>
+                  <S.PayBtn>
+                    <Ionicons name="checkmark" size={14} color={theme.primary} />
+                    <S.PayBtnText>Pagar</S.PayBtnText>
+                  </S.PayBtn>
+                </AnimatedPressable>
+              )}
             </S.Right>
           </S.Row>
         </AnimatedPressable>

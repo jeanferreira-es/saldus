@@ -93,11 +93,14 @@ export class RecurrenceCalculator {
     return total === undefined ? undefined : Math.max(total - recurrence.generatedCount, 0);
   }
 
-  /** Valor desta regra no mês de `month` (0 se não houver ocorrência nele). */
+  /**
+   * Valor que esta regra ainda vai descontar no mês de `month` (0 se não houver
+   * ocorrência nele ou se ela já foi lançada — inclusive paga antecipadamente).
+   */
   static amountInMonth(recurrence: Recurrence, month: Date): number {
     if (recurrence.canceledAt) return 0;
     const index = this.monthsBetween(recurrence.startDate, month);
-    return this.hasOccurrence(recurrence, index) ? recurrence.amount : 0;
+    return index >= recurrence.generatedCount && this.hasOccurrence(recurrence, index) ? recurrence.amount : 0;
   }
 
   /** O que ainda vai ser descontado ESTE mês (ocorrências do mês que não viraram lançamento). */

@@ -143,6 +143,52 @@ export class RecurrenceRepository {
 
   private static generating: Promise<unknown> = Promise.resolve();
 
+  /**
+   * Antecipa o pagamento da próxima ocorrência (ex: conta do dia 15 paga no dia 10):
+   * lança o desconto agora, com a data de hoje, e avança `generated_count` — então,
+   * quando chegar o dia do desconto, essa ocorrência não é lançada de novo.
+   * Antes, lança o que já venceu, para a antecipação valer para a próxima de fato.
+   * Retorna false se a regra não tem mais ocorrências (encerrada ou interrompida).
+   */
+  static payNext(id: string, now: Date): Promise<boolean> {
+    const run = this.generating.then(async () => {
+      await this.runGenerateDue(now);
+      return this.runPayNext(id, now);
+    });
+    this.generating = run.catch(() => undefined);
+    return run;
+  }
+
+  private static async runPayNext(id: string, now: Date): Promise<boolean> {
+    const db = await getDatabase();
+    const recurrence = (await this.getAll()).find((r) => r.id === id);
+    if (!recurrence || !RecurrenceCalculator.isActive(recurrence)) return false;
+
+    const index = recurrence.generatedCount;
+    await db.withTransactionAsync(async () => {
+      await db.runAsync(
+        `INSERT INTO transactions
+          (id, kind, amount, category, description, date, recurrence, installments_total,
+           installments_current, recurrence_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          generateId(),
+          recurrence.kind,
+          recurrence.amount,
+          recurrence.category,
+          recurrence.description,
+          now.toISOString(),
+          recurrence.type,
+          recurrence.installments?.total ?? null,
+          RecurrenceCalculator.installmentNumber(recurrence, index) ?? null,
+          recurrence.id,
+        ]
+      );
+      await db.runAsync("UPDATE recurrences SET generated_count = ? WHERE id = ?", [index + 1, recurrence.id]);
+    });
+    return true;
+  }
+
   private static async runGenerateDue(now: Date): Promise<number> {
     const db = await getDatabase();
     const recurrences = await this.getAll();

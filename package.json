@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "store-assets": "node scripts/generate-store-assets.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.4.1",
